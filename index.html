@@ -210,7 +210,7 @@
 
   <script>
     const rows = document.getElementById("rows");
-    const STORAGE_KEY = "eggryptoStatusCalculatorRowsV12";
+    const STORAGE_KEY = "eggryptoStatusCalculatorRowsV13";
 
     let pressTimer = null;
     let repeatTimer = null;
@@ -297,6 +297,12 @@
       rows.appendChild(tr);
 
       tr.querySelectorAll("input").forEach(input => {
+        if (!input.classList.contains("memo")) {
+          input.addEventListener("focus", () => {
+            setTimeout(() => input.select(), 0);
+          });
+        }
+
         input.addEventListener("input", () => {
           calculateAll();
           saveRows();
