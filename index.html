@@ -58,7 +58,7 @@
     table {
       border-collapse: collapse;
       width: 100%;
-      min-width: 1120px;
+      min-width: 1040px;
     }
 
     th, td {
@@ -88,19 +88,25 @@
 
     .number-control {
       display: inline-flex;
-      align-items: center;
-      gap: 4px;
+      align-items: stretch;
+      gap: 2px;
     }
 
-    .step-btn {
-      width: 30px;
-      height: 34px;
+    .spin-buttons {
+      display: inline-flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .spin-btn {
+      width: 24px;
+      height: 17px;
       padding: 0;
-      font-size: 18px;
-      line-height: 1;
       border: 1px solid #aaa;
       background: #fff;
-      border-radius: 6px;
+      border-radius: 4px;
+      font-size: 10px;
+      line-height: 1;
       cursor: pointer;
       touch-action: manipulation;
       user-select: none;
@@ -109,9 +115,8 @@
       -webkit-tap-highlight-color: transparent;
     }
 
-    .step-btn:active {
+    .spin-btn:active {
       background: #dfe7ff;
-      transform: translateY(1px);
     }
 
     .result {
@@ -151,10 +156,10 @@
         font-size: 16px;
       }
 
-      .step-btn {
-        width: 32px;
-        height: 36px;
-        font-size: 18px;
+      .spin-btn {
+        width: 24px;
+        height: 18px;
+        font-size: 10px;
       }
     }
   </style>
@@ -210,10 +215,13 @@
 
   <script>
     const rows = document.getElementById("rows");
-    const STORAGE_KEY = "eggryptoStatusCalculatorRowsV13";
+    const STORAGE_KEY = "eggryptoStatusCalculatorRowsV14";
 
     let pressTimer = null;
     let repeatTimer = null;
+    let pressStartX = 0;
+    let pressStartY = 0;
+    let pressMoved = false;
 
     function defaultRow() {
       return {
@@ -238,13 +246,6 @@
     function numberControl(className, value, min, max, step) {
       return `
         <div class="number-control">
-          <button
-            type="button"
-            class="step-btn"
-            data-target="${className}"
-            data-step="-${step}"
-            aria-label="${className}を下げる"
-          >−</button>
           <input
             type="number"
             class="${className}"
@@ -254,13 +255,22 @@
             value="${value}"
             inputmode="decimal"
           >
-          <button
-            type="button"
-            class="step-btn"
-            data-target="${className}"
-            data-step="${step}"
-            aria-label="${className}を上げる"
-          >＋</button>
+          <div class="spin-buttons">
+            <button
+              type="button"
+              class="spin-btn"
+              data-target="${className}"
+              data-step="${step}"
+              aria-label="${className}を上げる"
+            >▲</button>
+            <button
+              type="button"
+              class="spin-btn"
+              data-target="${className}"
+              data-step="-${step}"
+              aria-label="${className}を下げる"
+            >▼</button>
+          </div>
         </div>
       `;
     }
@@ -321,11 +331,12 @@
         });
       });
 
-      tr.querySelectorAll(".step-btn").forEach(button => {
+      tr.querySelectorAll(".spin-btn").forEach(button => {
         button.addEventListener("pointerdown", startPress);
-        button.addEventListener("pointerup", stopPress);
-        button.addEventListener("pointerleave", stopPress);
-        button.addEventListener("pointercancel", stopPress);
+        button.addEventListener("pointermove", movePress);
+        button.addEventListener("pointerup", endPress);
+        button.addEventListener("pointerleave", cancelPress);
+        button.addEventListener("pointercancel", cancelPress);
         button.addEventListener("contextmenu", event => event.preventDefault());
       });
 
@@ -338,21 +349,55 @@
       event.preventDefault();
 
       const button = event.currentTarget;
-      const className = button.dataset.target;
-      const step = Number(button.dataset.step);
+      pressStartX = event.clientX;
+      pressStartY = event.clientY;
+      pressMoved = false;
 
-      stepValue(button, className, step);
+      button.dataset.pressed = "true";
 
-      stopPress();
+      stopTimers();
 
       pressTimer = setTimeout(() => {
+        if (pressMoved || button.dataset.pressed !== "true") return;
+
+        const className = button.dataset.target;
+        const step = Number(button.dataset.step);
+
         repeatTimer = setInterval(() => {
           stepValue(button, className, step);
         }, 90);
       }, 350);
     }
 
-    function stopPress() {
+    function movePress(event) {
+      const dx = Math.abs(event.clientX - pressStartX);
+      const dy = Math.abs(event.clientY - pressStartY);
+
+      if (dx > 10 || dy > 10) {
+        pressMoved = true;
+        cancelPress(event);
+      }
+    }
+
+    function endPress(event) {
+      const button = event.currentTarget;
+
+      if (!pressMoved && button.dataset.pressed === "true" && repeatTimer === null) {
+        const className = button.dataset.target;
+        const step = Number(button.dataset.step);
+        stepValue(button, className, step);
+      }
+
+      button.dataset.pressed = "false";
+      stopTimers();
+    }
+
+    function cancelPress(event) {
+      event.currentTarget.dataset.pressed = "false";
+      stopTimers();
+    }
+
+    function stopTimers() {
       clearTimeout(pressTimer);
       clearInterval(repeatTimer);
       pressTimer = null;
