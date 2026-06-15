@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EGGRYPTO Status Calculator</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      margin: 0;
+      padding: 24px;
+      background: #f7f8fb;
+      color: #222;
+    }
+
+    h1 {
+      font-size: 24px;
+      margin-bottom: 8px;
+    }
+
+    .description {
+      margin-bottom: 20px;
+      line-height: 1.7;
+      color: #444;
+    }
+
+    .toolbar {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+
+    button {
+      padding: 8px 12px;
+      border: 1px solid #bbb;
+      background: #fff;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    button:hover {
+      background: #eef2ff;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      background: #fff;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+    }
+
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      min-width: 850px;
+    }
+
+    th, td {
+      border-bottom: 1px solid #e5e5e5;
+      padding: 8px;
+      text-align: center;
+      white-space: nowrap;
+    }
+
+    th {
+      background: #f0f2f5;
+      font-weight: 700;
+    }
+
+    input {
+      width: 86px;
+      padding: 6px;
+      font-size: 16px;
+      text-align: right;
+      box-sizing: border-box;
+    }
+
+    input.memo {
+      width: 180px;
+      text-align: left;
+    }
+
+    .result {
+      font-weight: 700;
+      font-size: 18px;
+    }
+
+    .delete-btn {
+      color: #b00020;
+    }
+
+    .note {
+      margin-top: 16px;
+      font-size: 14px;
+      color: #555;
+      line-height: 1.7;
+    }
+
+    @media (max-width: 600px) {
+      body {
+        padding: 16px;
+      }
+
+      h1 {
+        font-size: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>EGGRYPTO Status Calculator</h1>
+
+  <div class="description">
+    エグリプトのモンスターステータスを簡単に計算するためのツールです。<br>
+    個体値・種族値・レベル・性格補正・バフを入力すると、計算値を表示します。
+  </div>
+
+  <div class="toolbar">
+    <button onclick="addRow()">行を追加</button>
+    <button onclick="resetRows()">リセット</button>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>No.</th>
+          <th>個体値</th>
+          <th>種族値</th>
+          <th>レベル</th>
+          <th>性格補正</th>
+          <th>バフ</th>
+          <th>計算値</th>
+          <th>メモ</th>
+          <th>削除</th>
+        </tr>
+      </thead>
+      <tbody id="rows"></tbody>
+    </table>
+  </div>
+
+  <div class="note">
+    計算式：<br>
+    floor(((種族値 × 2 + 個体値) × レベル ÷ 100 + 10) × 性格補正 × バフ補正)<br>
+    バフ欄は「0」「10」「20」のように入力します。0なら補正なし、10なら1.1倍として計算します。
+  </div>
+
+  <script>
+    const rows = document.getElementById("rows");
+
+    function createRow(data = {}) {
+      const tr = document.createElement("tr");
+
+      tr.innerHTML = `
+        <td class="no"></td>
+        <td><input type="number" class="iv" value="${data.iv ?? 0}"></td>
+        <td><input type="number" class="base" value="${data.base ?? 0}"></td>
+        <td><input type="number" class="level" value="${data.level ?? 100}"></td>
+        <td><input type="number" step="0.1" class="nature" value="${data.nature ?? 1}"></td>
+        <td><input type="number" class="buff" value="${data.buff ?? 0}"></td>
+        <td class="result">0</td>
+        <td><input type="text" class="memo" value="${data.memo ?? ""}"></td>
+        <td><button class="delete-btn" onclick="deleteRow(this)">削除</button></td>
+      `;
+
+      rows.appendChild(tr);
+
+      tr.querySelectorAll("input").forEach(input => {
+        input.addEventListener("input", () => {
+          calculateAll();
+          saveRows();
+        });
+      });
+
+      calculateAll();
+      saveRows();
+    }
+
+    function calculateRow(tr) {
+      const iv = Number(tr.querySelector(".iv").value) || 0;
+      const base = Number(tr.querySelector(".base").value) || 0;
+      const level = Number(tr.querySelector(".level").value) || 0;
+      const nature = Number(tr.querySelector(".nature").value) || 1;
+      const buff = Number(tr.querySelector(".buff").value) || 0;
+
+      const buffRate = 1 + buff / 100;
+      const result = Math.floor((((base * 2 + iv) * level / 100) + 10) * nature * buffRate);
+
+      tr.querySelector(".result").textContent = result;
+    }
+
+    function calculateAll() {
+      [...rows.children].forEach((tr, index) => {
+        tr.querySelector(".no").textContent = index + 1;
+        calculateRow(tr);
+      });
+    }
+
+    function addRow() {
+      createRow({
+        iv: 0,
+        base: 0,
+        level: 100,
+        nature: 1,
+        buff: 0,
+        memo: ""
+      });
+    }
+
+    function deleteRow(button) {
+      button.closest("tr").remove();
+      calculateAll();
+      saveRows();
+    }
+
+    function resetRows() {
+      if (!confirm("入力内容をリセットしますか？")) return;
+
+      rows.innerHTML = "";
+      createRow({ iv: 0, base: 0, level: 100, nature: 1, buff: 0, memo: "" });
+      saveRows();
+    }
+
+    function saveRows() {
+      const data = [...rows.children].map(tr => ({
+        iv: tr.querySelector(".iv").value,
+        base: tr.querySelector(".base").value,
+        level: tr.querySelector(".level").value,
+        nature: tr.querySelector(".nature").value,
+        buff: tr.querySelector(".buff").value,
+        memo: tr.querySelector(".memo").value
+      }));
+
+      localStorage.setItem("eggryptoStatusCalculatorRows", JSON.stringify(data));
+    }
+
+    function loadRows() {
+      const saved = localStorage.getItem("eggryptoStatusCalculatorRows");
+
+      if (saved) {
+        JSON.parse(saved).forEach(row => createRow(row));
+      } else {
+        createRow({ iv: 28, base: 88, level: 100, nature: 1.1, buff: 0, memo: "アメリ" });
+        createRow({ iv: 29, base: 80, level: 100, nature: 1.1, buff: 0, memo: "" });
+        createRow({ iv: 18, base: 89, level: 100, nature: 1.1, buff: 0, memo: "" });
+      }
+
+      calculateAll();
+    }
+
+    loadRows();
+  </script>
+</body>
+</html>
