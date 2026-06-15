@@ -162,12 +162,12 @@
   </div>
 
   <div class="credit">
-    浮沈亭マボロ志（cpt.マボロ志）｜EGGRYPTO Status Calculator
+    cpt.マボロ志｜EGGRYPTO Status Calculator
   </div>
 
   <script>
     const rows = document.getElementById("rows");
-    const STORAGE_KEY = "eggryptoStatusCalculatorRowsV8";
+    const STORAGE_KEY = "eggryptoStatusCalculatorRowsV9";
 
     function defaultRow() {
       return {
@@ -309,7 +309,7 @@
 
       rows.innerHTML = "";
 
-      for (let i = 0; i < 5; i++) {
+      for (let i = 0; i < 6; i++) {
         createRow(defaultRow());
       }
 
@@ -338,16 +338,16 @@
           const data = JSON.parse(saved);
           data.forEach(row => createRow(row));
 
-          while (rows.children.length < 5) {
+          while (rows.children.length < 6) {
             createRow(defaultRow());
           }
         } catch {
-          for (let i = 0; i < 5; i++) {
+          for (let i = 0; i < 6; i++) {
             createRow(defaultRow());
           }
         }
       } else {
-        for (let i = 0; i < 5; i++) {
+        for (let i = 0; i < 6; i++) {
           createRow(defaultRow());
         }
       }
