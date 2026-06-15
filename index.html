@@ -54,7 +54,7 @@
     table {
       border-collapse: collapse;
       width: 100%;
-      min-width: 850px;
+      min-width: 1020px;
     }
 
     th, td {
@@ -69,12 +69,16 @@
       font-weight: 700;
     }
 
-    input {
+    input, select {
       width: 86px;
       padding: 6px;
       font-size: 16px;
       text-align: right;
       box-sizing: border-box;
+    }
+
+    select {
+      text-align: center;
     }
 
     input.memo {
@@ -114,7 +118,7 @@
 
   <div class="description">
     エグリプトのモンスターステータスを簡単に計算するためのツールです。<br>
-    個体値・種族値・レベル・性格補正・バフを入力すると、計算値を表示します。
+    個体値・種族値・レベル・性格補正・KIZUNA・バフ/デバフを入力すると、計算値を表示します。
   </div>
 
   <div class="toolbar">
@@ -131,7 +135,8 @@
           <th>種族値</th>
           <th>レベル</th>
           <th>性格補正</th>
-          <th>バフ</th>
+          <th>KIZUNA</th>
+          <th>バフ/デバフ</th>
           <th>計算値</th>
           <th>メモ</th>
           <th>削除</th>
@@ -143,32 +148,67 @@
 
   <div class="note">
     計算式：<br>
-    floor(((種族値 × 2 + 個体値) × レベル ÷ 100 + 10) × 性格補正 × バフ補正)<br>
-    バフ欄は「0」「10」「20」のように入力します。0なら補正なし、10なら1.1倍として計算します。
+    通常ステータス = floor(((種族値 × 2 + 個体値) × レベル ÷ 100 + 10) × 性格補正)<br>
+    計算値 = floor((通常ステータス + KIZUNA) × バフ/デバフ補正)<br><br>
+
+    KIZUNA欄には、そのステータスに加算されている絆補正値を入力してください。<br>
+    例：HPに+20なら、HPを計算する行のKIZUNA欄に20を入力します。<br><br>
+
+    バフ/デバフ欄は「0」「100」「-50」のように入力します。<br>
+    0なら補正なし、100なら2倍、-50なら0.5倍です。
   </div>
 
   <script>
     const rows = document.getElementById("rows");
+    const STORAGE_KEY = "eggryptoStatusCalculatorRowsV4";
+
+    function defaultRow() {
+      return {
+        iv: 16,
+        base: 100,
+        level: 90,
+        nature: 1,
+        kizuna: 0,
+        buff: 0,
+        memo: ""
+      };
+    }
 
     function createRow(data = {}) {
       const tr = document.createElement("tr");
+      const row = { ...defaultRow(), ...data };
+      const natureValue = String(row.nature);
 
       tr.innerHTML = `
         <td class="no"></td>
-        <td><input type="number" class="iv" value="${data.iv ?? 0}"></td>
-        <td><input type="number" class="base" value="${data.base ?? 0}"></td>
-        <td><input type="number" class="level" value="${data.level ?? 100}"></td>
-        <td><input type="number" step="0.1" class="nature" value="${data.nature ?? 1}"></td>
-        <td><input type="number" class="buff" value="${data.buff ?? 0}"></td>
+        <td><input type="number" class="iv" min="0" max="32" value="${row.iv}"></td>
+        <td><input type="number" class="base" min="0" max="300" value="${row.base}"></td>
+        <td><input type="number" class="level" min="0" max="100" value="${row.level}"></td>
+        <td>
+          <select class="nature">
+            <option value="0.9" ${natureValue === "0.9" ? "selected" : ""}>0.9</option>
+            <option value="1" ${natureValue === "1" ? "selected" : ""}>1</option>
+            <option value="1.1" ${natureValue === "1.1" ? "selected" : ""}>1.1</option>
+          </select>
+        </td>
+        <td><input type="number" class="kizuna" min="0" max="320" value="${row.kizuna}"></td>
+        <td><input type="number" class="buff" min="-200" max="200" value="${row.buff}"></td>
         <td class="result">0</td>
-        <td><input type="text" class="memo" value="${data.memo ?? ""}"></td>
+        <td><input type="text" class="memo" value="${row.memo}"></td>
         <td><button class="delete-btn" onclick="deleteRow(this)">削除</button></td>
       `;
 
       rows.appendChild(tr);
 
-      tr.querySelectorAll("input").forEach(input => {
+      tr.querySelectorAll("input, select").forEach(input => {
         input.addEventListener("input", () => {
+          normalizeInputs(tr);
+          calculateAll();
+          saveRows();
+        });
+
+        input.addEventListener("change", () => {
+          normalizeInputs(tr);
           calculateAll();
           saveRows();
         });
@@ -178,15 +218,43 @@
       saveRows();
     }
 
+    function clamp(value, min, max) {
+      const number = Number(value);
+
+      if (Number.isNaN(number)) return min;
+      if (number < min) return min;
+      if (number > max) return max;
+
+      return number;
+    }
+
+    function normalizeInputs(tr) {
+      const iv = tr.querySelector(".iv");
+      const base = tr.querySelector(".base");
+      const level = tr.querySelector(".level");
+      const kizuna = tr.querySelector(".kizuna");
+      const buff = tr.querySelector(".buff");
+
+      iv.value = clamp(iv.value, 0, 32);
+      base.value = clamp(base.value, 0, 300);
+      level.value = clamp(level.value, 0, 100);
+      kizuna.value = clamp(kizuna.value, 0, 320);
+      buff.value = clamp(buff.value, -200, 200);
+    }
+
     function calculateRow(tr) {
+      normalizeInputs(tr);
+
       const iv = Number(tr.querySelector(".iv").value) || 0;
       const base = Number(tr.querySelector(".base").value) || 0;
       const level = Number(tr.querySelector(".level").value) || 0;
       const nature = Number(tr.querySelector(".nature").value) || 1;
+      const kizuna = Number(tr.querySelector(".kizuna").value) || 0;
       const buff = Number(tr.querySelector(".buff").value) || 0;
 
+      const normalStatus = Math.floor((((base * 2 + iv) * level / 100) + 10) * nature);
       const buffRate = 1 + buff / 100;
-      const result = Math.floor((((base * 2 + iv) * level / 100) + 10) * nature * buffRate);
+      const result = Math.floor((normalStatus + kizuna) * buffRate);
 
       tr.querySelector(".result").textContent = result;
     }
@@ -199,14 +267,7 @@
     }
 
     function addRow() {
-      createRow({
-        iv: 0,
-        base: 0,
-        level: 100,
-        nature: 1,
-        buff: 0,
-        memo: ""
-      });
+      createRow(defaultRow());
     }
 
     function deleteRow(button) {
@@ -219,7 +280,11 @@
       if (!confirm("入力内容をリセットしますか？")) return;
 
       rows.innerHTML = "";
-      createRow({ iv: 0, base: 0, level: 100, nature: 1, buff: 0, memo: "" });
+
+      for (let i = 0; i < 5; i++) {
+        createRow(defaultRow());
+      }
+
       saveRows();
     }
 
@@ -229,22 +294,34 @@
         base: tr.querySelector(".base").value,
         level: tr.querySelector(".level").value,
         nature: tr.querySelector(".nature").value,
+        kizuna: tr.querySelector(".kizuna").value,
         buff: tr.querySelector(".buff").value,
         memo: tr.querySelector(".memo").value
       }));
 
-      localStorage.setItem("eggryptoStatusCalculatorRows", JSON.stringify(data));
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
     }
 
     function loadRows() {
-      const saved = localStorage.getItem("eggryptoStatusCalculatorRows");
+      const saved = localStorage.getItem(STORAGE_KEY);
 
       if (saved) {
-        JSON.parse(saved).forEach(row => createRow(row));
+        try {
+          const data = JSON.parse(saved);
+          data.forEach(row => createRow(row));
+
+          while (rows.children.length < 5) {
+            createRow(defaultRow());
+          }
+        } catch {
+          for (let i = 0; i < 5; i++) {
+            createRow(defaultRow());
+          }
+        }
       } else {
-        createRow({ iv: 28, base: 88, level: 100, nature: 1.1, buff: 0, memo: "アメリ" });
-        createRow({ iv: 29, base: 80, level: 100, nature: 1.1, buff: 0, memo: "" });
-        createRow({ iv: 18, base: 89, level: 100, nature: 1.1, buff: 0, memo: "" });
+        for (let i = 0; i < 5; i++) {
+          createRow(defaultRow());
+        }
       }
 
       calculateAll();
