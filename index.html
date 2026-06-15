@@ -121,7 +121,7 @@
 
   <div class="description">
     エグリプトのモンスターステータスを簡単に計算するためのツールです。<br>
-    個体値・種族値・レベル・性格補正・KIZUNA・バフ/デバフを入力すると、計算値を表示します。
+    種族値・個体値・性格補正・レベル・KIZUNA・バフ/デバフを入力すると、計算値を表示します。
   </div>
 
   <div class="toolbar">
@@ -134,10 +134,10 @@
       <thead>
         <tr>
           <th>No.</th>
-          <th>個体値</th>
           <th>種族値</th>
-          <th>レベル</th>
+          <th>個体値</th>
           <th>性格補正</th>
+          <th>レベル</th>
           <th>KIZUNA</th>
           <th>バフ/デバフ</th>
           <th>計算値</th>
@@ -151,7 +151,7 @@
 
   <div class="note">
     計算の流れ：<br>
-    個体値・種族値・レベル・性格補正から通常ステータスを計算します。<br>
+    種族値・個体値・性格補正・レベルから通常ステータスを計算します。<br>
     そこにKIZUNAの数値を加算し、最後にバフ/デバフ補正をかけます。<br><br>
 
     KIZUNA欄には、加算されている絆補正値を入力してください。<br>
@@ -162,19 +162,19 @@
   </div>
 
   <div class="credit">
-    作成：浮沈亭マボロ志（cpt.マボロ志）｜EGGRYPTO Status Calculator
+    浮沈亭マボロ志（cpt.マボロ志）｜EGGRYPTO Status Calculator
   </div>
 
   <script>
     const rows = document.getElementById("rows");
-    const STORAGE_KEY = "eggryptoStatusCalculatorRowsV7";
+    const STORAGE_KEY = "eggryptoStatusCalculatorRowsV8";
 
     function defaultRow() {
       return {
-        iv: 0,
         base: 100,
-        level: 90,
+        iv: 0,
         nature: 1,
+        level: 90,
         kizuna: 0,
         buff: 0,
         memo: ""
@@ -195,10 +195,10 @@
 
       tr.innerHTML = `
         <td class="no"></td>
-        <td><input type="number" class="iv" min="0" max="32" step="1" value="${row.iv}"></td>
         <td><input type="number" class="base" min="0" max="300" step="1" value="${row.base}"></td>
-        <td><input type="number" class="level" min="0" max="100" step="1" value="${row.level}"></td>
+        <td><input type="number" class="iv" min="0" max="32" step="1" value="${row.iv}"></td>
         <td><input type="number" class="nature" min="0.9" max="1.1" step="0.1" value="${row.nature}"></td>
+        <td><input type="number" class="level" min="0" max="100" step="1" value="${row.level}"></td>
         <td><input type="number" class="kizuna" min="0" max="320" step="10" value="${row.kizuna}"></td>
         <td><input type="number" class="buff" min="-200" max="200" step="1" value="${row.buff}"></td>
         <td class="result">0</td>
@@ -249,19 +249,20 @@
     }
 
     function normalizeInputs(tr) {
-      const iv = tr.querySelector(".iv");
       const base = tr.querySelector(".base");
-      const level = tr.querySelector(".level");
+      const iv = tr.querySelector(".iv");
       const nature = tr.querySelector(".nature");
+      const level = tr.querySelector(".level");
       const kizuna = tr.querySelector(".kizuna");
       const buff = tr.querySelector(".buff");
 
-      iv.value = clamp(iv.value, 0, 32);
       base.value = clamp(base.value, 0, 300);
-      level.value = clamp(level.value, 0, 100);
+      iv.value = clamp(iv.value, 0, 32);
 
       const natureValue = clamp(nature.value, 0.9, 1.1);
       nature.value = Math.round(natureValue * 10) / 10;
+
+      level.value = clamp(level.value, 0, 100);
 
       const kizunaValue = clamp(kizuna.value, 0, 320);
       kizuna.value = Math.round(kizunaValue / 10) * 10;
@@ -272,10 +273,10 @@
     function calculateRow(tr) {
       normalizeInputs(tr);
 
-      const iv = Number(tr.querySelector(".iv").value) || 0;
       const base = Number(tr.querySelector(".base").value) || 0;
-      const level = Number(tr.querySelector(".level").value) || 0;
+      const iv = Number(tr.querySelector(".iv").value) || 0;
       const nature = Number(tr.querySelector(".nature").value) || 1;
+      const level = Number(tr.querySelector(".level").value) || 0;
       const kizuna = Number(tr.querySelector(".kizuna").value) || 0;
       const buff = Number(tr.querySelector(".buff").value) || 0;
 
@@ -317,10 +318,10 @@
 
     function saveRows() {
       const data = [...rows.children].map(tr => ({
-        iv: tr.querySelector(".iv").value,
         base: tr.querySelector(".base").value,
-        level: tr.querySelector(".level").value,
+        iv: tr.querySelector(".iv").value,
         nature: tr.querySelector(".nature").value,
+        level: tr.querySelector(".level").value,
         kizuna: tr.querySelector(".kizuna").value,
         buff: tr.querySelector(".buff").value,
         memo: tr.querySelector(".memo").value
