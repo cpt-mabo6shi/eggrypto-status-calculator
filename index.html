@@ -69,16 +69,12 @@
       font-weight: 700;
     }
 
-    input, select {
+    input {
       width: 86px;
       padding: 6px;
       font-size: 16px;
       text-align: right;
       box-sizing: border-box;
-    }
-
-    select {
-      text-align: center;
     }
 
     input.memo {
@@ -160,11 +156,11 @@
 
   <script>
     const rows = document.getElementById("rows");
-    const STORAGE_KEY = "eggryptoStatusCalculatorRowsV4";
+    const STORAGE_KEY = "eggryptoStatusCalculatorRowsV5";
 
     function defaultRow() {
       return {
-        iv: 16,
+        iv: 0,
         base: 100,
         level: 90,
         nature: 1,
@@ -177,22 +173,15 @@
     function createRow(data = {}) {
       const tr = document.createElement("tr");
       const row = { ...defaultRow(), ...data };
-      const natureValue = String(row.nature);
 
       tr.innerHTML = `
         <td class="no"></td>
-        <td><input type="number" class="iv" min="0" max="32" value="${row.iv}"></td>
-        <td><input type="number" class="base" min="0" max="300" value="${row.base}"></td>
-        <td><input type="number" class="level" min="0" max="100" value="${row.level}"></td>
-        <td>
-          <select class="nature">
-            <option value="0.9" ${natureValue === "0.9" ? "selected" : ""}>0.9</option>
-            <option value="1" ${natureValue === "1" ? "selected" : ""}>1</option>
-            <option value="1.1" ${natureValue === "1.1" ? "selected" : ""}>1.1</option>
-          </select>
-        </td>
-        <td><input type="number" class="kizuna" min="0" max="320" value="${row.kizuna}"></td>
-        <td><input type="number" class="buff" min="-200" max="200" value="${row.buff}"></td>
+        <td><input type="number" class="iv" min="0" max="32" step="1" value="${row.iv}"></td>
+        <td><input type="number" class="base" min="0" max="300" step="1" value="${row.base}"></td>
+        <td><input type="number" class="level" min="0" max="100" step="1" value="${row.level}"></td>
+        <td><input type="number" class="nature" min="0.9" max="1.1" step="0.1" value="${row.nature}"></td>
+        <td><input type="number" class="kizuna" min="0" max="320" step="10" value="${row.kizuna}"></td>
+        <td><input type="number" class="buff" min="-200" max="200" step="1" value="${row.buff}"></td>
         <td class="result">0</td>
         <td><input type="text" class="memo" value="${row.memo}"></td>
         <td><button class="delete-btn" onclick="deleteRow(this)">削除</button></td>
@@ -200,7 +189,7 @@
 
       rows.appendChild(tr);
 
-      tr.querySelectorAll("input, select").forEach(input => {
+      tr.querySelectorAll("input").forEach(input => {
         input.addEventListener("input", () => {
           normalizeInputs(tr);
           calculateAll();
@@ -232,13 +221,20 @@
       const iv = tr.querySelector(".iv");
       const base = tr.querySelector(".base");
       const level = tr.querySelector(".level");
+      const nature = tr.querySelector(".nature");
       const kizuna = tr.querySelector(".kizuna");
       const buff = tr.querySelector(".buff");
 
       iv.value = clamp(iv.value, 0, 32);
       base.value = clamp(base.value, 0, 300);
       level.value = clamp(level.value, 0, 100);
-      kizuna.value = clamp(kizuna.value, 0, 320);
+
+      const natureValue = clamp(nature.value, 0.9, 1.1);
+      nature.value = Math.round(natureValue * 10) / 10;
+
+      const kizunaValue = clamp(kizuna.value, 0, 320);
+      kizuna.value = Math.round(kizunaValue / 10) * 10;
+
       buff.value = clamp(buff.value, -200, 200);
     }
 
