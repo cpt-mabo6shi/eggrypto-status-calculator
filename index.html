@@ -143,20 +143,20 @@
   </div>
 
   <div class="note">
-    計算式：<br>
-    通常ステータス = floor(((種族値 × 2 + 個体値) × レベル ÷ 100 + 10) × 性格補正)<br>
-    計算値 = floor((通常ステータス + KIZUNA) × バフ/デバフ補正)<br><br>
+    計算の流れ：<br>
+    個体値・種族値・レベル・性格補正から通常ステータスを計算します。<br>
+    そこにKIZUNAの数値を加算し、最後にバフ/デバフ補正をかけます。<br><br>
 
-    KIZUNA欄には、そのステータスに加算されている絆補正値を入力してください。<br>
-    例：HPに+20なら、HPを計算する行のKIZUNA欄に20を入力します。<br><br>
+    KIZUNA欄には、加算されている絆補正値を入力してください。<br>
+    KIZUNAが+20なら、KIZUNA欄に20を入力します。<br><br>
 
-    バフ/デバフ欄は「0」「100」「-50」のように入力します。<br>
-    0なら補正なし、100なら2倍、-50なら0.5倍です。
+    バフ/デバフ欄には、ステータスの増減率を％で入力してください。<br>
+    +10％なら10、-10％なら-10、補正なしなら0を入力します。
   </div>
 
   <script>
     const rows = document.getElementById("rows");
-    const STORAGE_KEY = "eggryptoStatusCalculatorRowsV5";
+    const STORAGE_KEY = "eggryptoStatusCalculatorRowsV6";
 
     function defaultRow() {
       return {
@@ -168,6 +168,14 @@
         buff: 0,
         memo: ""
       };
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;");
     }
 
     function createRow(data = {}) {
@@ -183,7 +191,19 @@
         <td><input type="number" class="kizuna" min="0" max="320" step="10" value="${row.kizuna}"></td>
         <td><input type="number" class="buff" min="-200" max="200" step="1" value="${row.buff}"></td>
         <td class="result">0</td>
-        <td><input type="text" class="memo" value="${row.memo}"></td>
+        <td>
+          <input
+            type="text"
+            class="memo"
+            value="${escapeHtml(row.memo)}"
+            lang="ja"
+            inputmode="text"
+            autocomplete="off"
+            autocapitalize="off"
+            autocorrect="off"
+            spellcheck="false"
+          >
+        </td>
         <td><button class="delete-btn" onclick="deleteRow(this)">削除</button></td>
       `;
 
