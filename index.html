@@ -58,7 +58,7 @@
     table {
       border-collapse: collapse;
       width: 100%;
-      min-width: 1040px;
+      min-width: 1120px;
     }
 
     th, td {
@@ -88,25 +88,19 @@
 
     .number-control {
       display: inline-flex;
-      align-items: stretch;
-      gap: 2px;
+      align-items: center;
+      gap: 4px;
     }
 
-    .spin-buttons {
-      display: inline-flex;
-      flex-direction: column;
-      gap: 2px;
-    }
-
-    .spin-btn {
-      width: 24px;
-      height: 17px;
+    .step-btn {
+      width: 30px;
+      height: 34px;
       padding: 0;
+      font-size: 18px;
+      line-height: 1;
       border: 1px solid #aaa;
       background: #fff;
-      border-radius: 4px;
-      font-size: 10px;
-      line-height: 1;
+      border-radius: 6px;
       cursor: pointer;
       touch-action: manipulation;
       user-select: none;
@@ -115,8 +109,9 @@
       -webkit-tap-highlight-color: transparent;
     }
 
-    .spin-btn:active {
+    .step-btn:active {
       background: #dfe7ff;
+      transform: translateY(1px);
     }
 
     .result {
@@ -156,10 +151,10 @@
         font-size: 16px;
       }
 
-      .spin-btn {
-        width: 24px;
-        height: 18px;
-        font-size: 10px;
+      .step-btn {
+        width: 32px;
+        height: 36px;
+        font-size: 18px;
       }
     }
   </style>
@@ -215,7 +210,7 @@
 
   <script>
     const rows = document.getElementById("rows");
-    const STORAGE_KEY = "eggryptoStatusCalculatorRowsV14";
+    const STORAGE_KEY = "eggryptoStatusCalculatorRowsV15";
 
     let pressTimer = null;
     let repeatTimer = null;
@@ -246,6 +241,13 @@
     function numberControl(className, value, min, max, step) {
       return `
         <div class="number-control">
+          <button
+            type="button"
+            class="step-btn"
+            data-target="${className}"
+            data-step="-${step}"
+            aria-label="${className}を下げる"
+          >−</button>
           <input
             type="number"
             class="${className}"
@@ -255,22 +257,13 @@
             value="${value}"
             inputmode="decimal"
           >
-          <div class="spin-buttons">
-            <button
-              type="button"
-              class="spin-btn"
-              data-target="${className}"
-              data-step="${step}"
-              aria-label="${className}を上げる"
-            >▲</button>
-            <button
-              type="button"
-              class="spin-btn"
-              data-target="${className}"
-              data-step="-${step}"
-              aria-label="${className}を下げる"
-            >▼</button>
-          </div>
+          <button
+            type="button"
+            class="step-btn"
+            data-target="${className}"
+            data-step="${step}"
+            aria-label="${className}を上げる"
+          >＋</button>
         </div>
       `;
     }
@@ -331,7 +324,7 @@
         });
       });
 
-      tr.querySelectorAll(".spin-btn").forEach(button => {
+      tr.querySelectorAll(".step-btn").forEach(button => {
         button.addEventListener("pointerdown", startPress);
         button.addEventListener("pointermove", movePress);
         button.addEventListener("pointerup", endPress);
