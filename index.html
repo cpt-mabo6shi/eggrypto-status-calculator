@@ -210,7 +210,7 @@
 
   <script>
     const rows = document.getElementById("rows");
-    const STORAGE_KEY = "eggryptoStatusCalculatorRowsV11";
+    const STORAGE_KEY = "eggryptoStatusCalculatorRowsV12";
 
     let pressTimer = null;
     let repeatTimer = null;
@@ -245,7 +245,15 @@
             data-step="-${step}"
             aria-label="${className}を下げる"
           >−</button>
-          <input type="number" class="${className}" min="${min}" max="${max}" step="${step}" value="${value}">
+          <input
+            type="number"
+            class="${className}"
+            min="${min}"
+            max="${max}"
+            step="${step}"
+            value="${value}"
+            inputmode="decimal"
+          >
           <button
             type="button"
             class="step-btn"
@@ -290,12 +298,17 @@
 
       tr.querySelectorAll("input").forEach(input => {
         input.addEventListener("input", () => {
-          normalizeInputs(tr);
           calculateAll();
           saveRows();
         });
 
         input.addEventListener("change", () => {
+          normalizeInputs(tr);
+          calculateAll();
+          saveRows();
+        });
+
+        input.addEventListener("blur", () => {
           normalizeInputs(tr);
           calculateAll();
           saveRows();
@@ -310,6 +323,7 @@
         button.addEventListener("contextmenu", event => event.preventDefault());
       });
 
+      normalizeInputs(tr);
       calculateAll();
       saveRows();
     }
@@ -342,24 +356,26 @@
     function stepValue(button, className, step) {
       const tr = button.closest("tr");
       const input = tr.querySelector("." + className);
-      const current = Number(input.value) || 0;
+      const current = parseNumber(input.value, 0);
       const min = Number(input.min);
       const max = Number(input.max);
       const newValue = current + step;
 
       input.value = clamp(newValue, min, max);
 
-      if (className === "nature") {
-        input.value = Math.round(Number(input.value) * 10) / 10;
-      }
-
-      if (className === "kizuna") {
-        input.value = Math.round(Number(input.value) / 10) * 10;
-      }
-
       normalizeInputs(tr);
       calculateAll();
       saveRows();
+    }
+
+    function parseNumber(value, fallback = 0) {
+      const number = Number(value);
+
+      if (value === "" || value === "-" || value === "." || Number.isNaN(number)) {
+        return fallback;
+      }
+
+      return number;
     }
 
     function clamp(value, min, max) {
@@ -380,29 +396,27 @@
       const kizuna = tr.querySelector(".kizuna");
       const buff = tr.querySelector(".buff");
 
-      base.value = clamp(base.value, 0, 300);
-      iv.value = clamp(iv.value, 0, 32);
+      base.value = clamp(parseNumber(base.value, 100), 0, 300);
+      iv.value = clamp(parseNumber(iv.value, 0), 0, 32);
 
-      const natureValue = clamp(nature.value, 0.9, 1.1);
+      const natureValue = clamp(parseNumber(nature.value, 1), 0.9, 1.1);
       nature.value = Math.round(natureValue * 10) / 10;
 
-      level.value = clamp(level.value, 0, 100);
+      level.value = clamp(parseNumber(level.value, 90), 0, 100);
 
-      const kizunaValue = clamp(kizuna.value, 0, 320);
+      const kizunaValue = clamp(parseNumber(kizuna.value, 0), 0, 320);
       kizuna.value = Math.round(kizunaValue / 10) * 10;
 
-      buff.value = clamp(buff.value, -200, 200);
+      buff.value = clamp(parseNumber(buff.value, 0), -200, 200);
     }
 
     function calculateRow(tr) {
-      normalizeInputs(tr);
-
-      const base = Number(tr.querySelector(".base").value) || 0;
-      const iv = Number(tr.querySelector(".iv").value) || 0;
-      const nature = Number(tr.querySelector(".nature").value) || 1;
-      const level = Number(tr.querySelector(".level").value) || 0;
-      const kizuna = Number(tr.querySelector(".kizuna").value) || 0;
-      const buff = Number(tr.querySelector(".buff").value) || 0;
+      const base = parseNumber(tr.querySelector(".base").value, 0);
+      const iv = parseNumber(tr.querySelector(".iv").value, 0);
+      const nature = parseNumber(tr.querySelector(".nature").value, 1);
+      const level = parseNumber(tr.querySelector(".level").value, 0);
+      const kizuna = parseNumber(tr.querySelector(".kizuna").value, 0);
+      const buff = parseNumber(tr.querySelector(".buff").value, 0);
 
       const normalStatus = Math.floor((((base * 2 + iv) * level / 100) + 10) * nature);
       const buffRate = 1 + buff / 100;
