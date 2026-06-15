@@ -98,6 +98,13 @@
       line-height: 1.7;
     }
 
+    .credit {
+      margin-top: 24px;
+      font-size: 13px;
+      color: #777;
+      text-align: right;
+    }
+
     @media (max-width: 600px) {
       body {
         padding: 16px;
@@ -154,9 +161,13 @@
     +10％なら10、-10％なら-10、補正なしなら0を入力します。
   </div>
 
+  <div class="credit">
+    浮沈亭マボロ志｜EGGRYPTO Status Calculator
+  </div>
+
   <script>
     const rows = document.getElementById("rows");
-    const STORAGE_KEY = "eggryptoStatusCalculatorRowsV6";
+    const STORAGE_KEY = "eggryptoStatusCalculatorRowsV7";
 
     function defaultRow() {
       return {
