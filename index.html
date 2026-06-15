@@ -54,7 +54,7 @@
     table {
       border-collapse: collapse;
       width: 100%;
-      min-width: 1020px;
+      min-width: 1120px;
     }
 
     th, td {
@@ -70,7 +70,7 @@
     }
 
     input {
-      width: 86px;
+      width: 78px;
       padding: 6px;
       font-size: 16px;
       text-align: right;
@@ -80,6 +80,28 @@
     input.memo {
       width: 180px;
       text-align: left;
+    }
+
+    .number-control {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .step-btn {
+      width: 28px;
+      height: 32px;
+      padding: 0;
+      font-size: 18px;
+      line-height: 1;
+      border: 1px solid #aaa;
+      background: #fff;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .step-btn:hover {
+      background: #eef2ff;
     }
 
     .result {
@@ -112,6 +134,17 @@
 
       h1 {
         font-size: 20px;
+      }
+
+      input {
+        width: 70px;
+        font-size: 16px;
+      }
+
+      .step-btn {
+        width: 30px;
+        height: 34px;
+        font-size: 18px;
       }
     }
   </style>
@@ -167,7 +200,7 @@
 
   <script>
     const rows = document.getElementById("rows");
-    const STORAGE_KEY = "eggryptoStatusCalculatorRowsV9";
+    const STORAGE_KEY = "eggryptoStatusCalculatorRowsV10";
 
     function defaultRow() {
       return {
@@ -189,18 +222,28 @@
         .replaceAll(">", "&gt;");
     }
 
+    function numberControl(className, value, min, max, step) {
+      return `
+        <div class="number-control">
+          <button type="button" class="step-btn" onclick="stepValue(this, '${className}', -${step})">−</button>
+          <input type="number" class="${className}" min="${min}" max="${max}" step="${step}" value="${value}">
+          <button type="button" class="step-btn" onclick="stepValue(this, '${className}', ${step})">＋</button>
+        </div>
+      `;
+    }
+
     function createRow(data = {}) {
       const tr = document.createElement("tr");
       const row = { ...defaultRow(), ...data };
 
       tr.innerHTML = `
         <td class="no"></td>
-        <td><input type="number" class="base" min="0" max="300" step="1" value="${row.base}"></td>
-        <td><input type="number" class="iv" min="0" max="32" step="1" value="${row.iv}"></td>
-        <td><input type="number" class="nature" min="0.9" max="1.1" step="0.1" value="${row.nature}"></td>
-        <td><input type="number" class="level" min="0" max="100" step="1" value="${row.level}"></td>
-        <td><input type="number" class="kizuna" min="0" max="320" step="10" value="${row.kizuna}"></td>
-        <td><input type="number" class="buff" min="-200" max="200" step="1" value="${row.buff}"></td>
+        <td>${numberControl("base", row.base, 0, 300, 1)}</td>
+        <td>${numberControl("iv", row.iv, 0, 32, 1)}</td>
+        <td>${numberControl("nature", row.nature, 0.9, 1.1, 0.1)}</td>
+        <td>${numberControl("level", row.level, 0, 100, 1)}</td>
+        <td>${numberControl("kizuna", row.kizuna, 0, 320, 10)}</td>
+        <td>${numberControl("buff", row.buff, -200, 200, 1)}</td>
         <td class="result">0</td>
         <td>
           <input
@@ -234,6 +277,29 @@
         });
       });
 
+      calculateAll();
+      saveRows();
+    }
+
+    function stepValue(button, className, step) {
+      const tr = button.closest("tr");
+      const input = tr.querySelector("." + className);
+      const current = Number(input.value) || 0;
+      const min = Number(input.min);
+      const max = Number(input.max);
+      const newValue = current + step;
+
+      input.value = clamp(newValue, min, max);
+
+      if (className === "nature") {
+        input.value = Math.round(Number(input.value) * 10) / 10;
+      }
+
+      if (className === "kizuna") {
+        input.value = Math.round(Number(input.value) / 10) * 10;
+      }
+
+      normalizeInputs(tr);
       calculateAll();
       saveRows();
     }
