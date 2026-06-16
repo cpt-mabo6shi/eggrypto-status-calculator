@@ -4,22 +4,39 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <title>エグリプト ステータス計算機 ver.1.3</title>
+  <title>エグリプト ステータス計算機 ver.1.4</title>
 
   <meta name="description" content="エグリプトのモンスターステータスを簡単に計算するためのツールです。">
 
-  <meta property="og:title" content="エグリプト ステータス計算機 ver.1.3">
+  <meta property="og:title" content="エグリプト ステータス計算機 ver.1.4">
   <meta property="og:description" content="エグリプトのモンスターステータスを簡単に計算できる便利ツールです。">
   <meta property="og:image" content="https://cpt-mabo6shi.github.io/eggrypto-status-calculator/ogp.png">
   <meta property="og:url" content="https://cpt-mabo6shi.github.io/eggrypto-status-calculator/">
   <meta property="og:type" content="website">
 
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="エグリプト ステータス計算機 ver.1.3">
+  <meta name="twitter:title" content="エグリプト ステータス計算機 ver.1.4">
   <meta name="twitter:description" content="エグリプトのモンスターステータスを簡単に計算できる便利ツールです。">
   <meta name="twitter:image" content="https://cpt-mabo6shi.github.io/eggrypto-status-calculator/ogp.png">
 
   <style>
+    html,
+    body,
+    button,
+    .label,
+    .card-title,
+    .result-box,
+    .description,
+    .note,
+    .credit,
+    h1,
+    th,
+    td {
+      -webkit-user-select: none;
+      user-select: none;
+      -webkit-touch-callout: none;
+    }
+
     body {
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       margin: 0;
@@ -53,9 +70,6 @@
       border-radius: 8px;
       cursor: pointer;
       touch-action: manipulation;
-      user-select: none;
-      -webkit-user-select: none;
-      -webkit-touch-callout: none;
       -webkit-tap-highlight-color: transparent;
     }
 
@@ -114,9 +128,18 @@
       background: #fff;
     }
 
+    input[type="number"] {
+      -webkit-user-select: none;
+      user-select: none;
+      -webkit-touch-callout: none;
+    }
+
     input.memo {
       width: 180px;
       text-align: left;
+      -webkit-user-select: text;
+      user-select: text;
+      -webkit-touch-callout: default;
     }
 
     .number-control {
@@ -286,7 +309,7 @@
   </style>
 </head>
 <body>
-  <h1>エグリプト ステータス計算機 ver.1.3</h1>
+  <h1>エグリプト ステータス計算機 ver.1.4</h1>
 
   <div class="description">
     エグリプトのモンスターステータスを簡単に計算するためのツールです。<br>
@@ -337,13 +360,13 @@
   </div>
 
   <div class="credit">
-    cpt.ツールズ｜EGGRYPTO Status Calculator ver.1.3
+    cpt.マボロ志｜EGGRYPTO Status Calculator ver.1.4
   </div>
 
   <script>
     const tableRows = document.getElementById("tableRows");
     const cards = document.getElementById("cards");
-    const STORAGE_KEY = "eggryptoStatusCalculatorResponsiveV4";
+    const STORAGE_KEY = "eggryptoStatusCalculatorResponsiveV6";
 
     let dataList = [];
 
@@ -556,8 +579,21 @@
     function bindEvents() {
       document.querySelectorAll("input[data-index]").forEach(input => {
         if (input.dataset.key !== "memo") {
-          input.addEventListener("focus", () => {
-            setTimeout(() => input.select(), 0);
+          input.addEventListener("focus", event => {
+            event.target.dataset.replaceOnInput = "true";
+          });
+
+          input.addEventListener("beforeinput", event => {
+            const target = event.target;
+
+            if (
+              target.dataset.replaceOnInput === "true" &&
+              event.inputType &&
+              event.inputType.startsWith("insert")
+            ) {
+              target.value = "";
+              target.dataset.replaceOnInput = "false";
+            }
           });
         }
 
