@@ -373,7 +373,7 @@
   <script>
     const tableRows = document.getElementById("tableRows");
     const cards = document.getElementById("cards");
-    const STORAGE_KEY = "eggryptoStatusCalculatorResponsiveV6";
+    const STORAGE_KEY = "eggryptoStatusCalculatorResponsiveV7";
 
     let dataList = [];
 
@@ -589,24 +589,25 @@
           input.addEventListener("focus", event => {
             event.target.dataset.replaceOnInput = "true";
           });
-
-          input.addEventListener("beforeinput", event => {
-            const target = event.target;
-
-            if (
-              target.dataset.replaceOnInput === "true" &&
-              event.inputType &&
-              event.inputType.startsWith("insert")
-            ) {
-              target.value = "";
-              target.dataset.replaceOnInput = "false";
-            }
-          });
         }
 
         input.addEventListener("input", event => {
           const index = Number(event.target.dataset.index);
           const key = event.target.dataset.key;
+
+          if (
+            key !== "memo" &&
+            event.target.dataset.replaceOnInput === "true"
+          ) {
+            if (event.data !== null && event.data !== undefined && event.data !== "") {
+              event.target.value = event.data;
+            } else {
+              const value = String(event.target.value);
+              event.target.value = value.slice(-1);
+            }
+
+            event.target.dataset.replaceOnInput = "false";
+          }
 
           dataList[index][key] = event.target.value;
           saveItems();
