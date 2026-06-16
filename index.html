@@ -15,13 +15,14 @@
 
     h1 {
       font-size: 24px;
-      margin-bottom: 8px;
+      margin: 0 0 8px;
     }
 
     .description {
       margin-bottom: 20px;
       line-height: 1.7;
       color: #444;
+      font-size: 15px;
     }
 
     .toolbar {
@@ -32,20 +33,33 @@
     }
 
     button {
-      padding: 8px 12px;
       border: 1px solid #bbb;
       background: #fff;
-      border-radius: 6px;
+      border-radius: 8px;
       cursor: pointer;
-      font-size: 14px;
       touch-action: manipulation;
       user-select: none;
       -webkit-user-select: none;
+      -webkit-touch-callout: none;
       -webkit-tap-highlight-color: transparent;
+    }
+
+    .toolbar button {
+      padding: 10px 14px;
+      font-size: 15px;
+      font-weight: 700;
     }
 
     button:hover {
       background: #eef2ff;
+    }
+
+    .desktop-table {
+      display: block;
+    }
+
+    .mobile-cards {
+      display: none;
     }
 
     .table-wrap {
@@ -75,10 +89,14 @@
 
     input {
       width: 78px;
+      height: 38px;
       padding: 6px;
       font-size: 16px;
       text-align: right;
       box-sizing: border-box;
+      border: 1px solid #aaa;
+      border-radius: 6px;
+      background: #fff;
     }
 
     input.memo {
@@ -97,16 +115,11 @@
       height: 34px;
       padding: 0;
       font-size: 18px;
+      font-weight: 800;
       line-height: 1;
       border: 1px solid #aaa;
       background: #fff;
       border-radius: 6px;
-      cursor: pointer;
-      touch-action: manipulation;
-      user-select: none;
-      -webkit-user-select: none;
-      -webkit-touch-callout: none;
-      -webkit-tap-highlight-color: transparent;
     }
 
     .step-btn:active {
@@ -115,16 +128,19 @@
     }
 
     .result {
-      font-weight: 700;
+      font-weight: 800;
       font-size: 18px;
+      color: #004f66;
     }
 
     .delete-btn {
+      padding: 8px 10px;
       color: #b00020;
+      font-size: 13px;
     }
 
     .note {
-      margin-top: 16px;
+      margin-top: 18px;
       font-size: 14px;
       color: #555;
       line-height: 1.7;
@@ -137,24 +153,119 @@
       text-align: right;
     }
 
-    @media (max-width: 600px) {
+    .cards {
+      display: grid;
+      gap: 14px;
+    }
+
+    .card {
+      background: #fff;
+      border: 1px solid #ddd;
+      border-radius: 12px;
+      padding: 14px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .card-title {
+      font-weight: 800;
+      font-size: 18px;
+    }
+
+    .field {
+      display: grid;
+      grid-template-columns: 90px 1fr;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .label {
+      font-weight: 700;
+      font-size: 14px;
+      color: #333;
+    }
+
+    .card .number-control {
+      display: grid;
+      grid-template-columns: 42px 1fr 42px;
+      gap: 6px;
+      align-items: center;
+    }
+
+    .card .step-btn {
+      width: 42px;
+      height: 40px;
+      font-size: 20px;
+    }
+
+    .card input {
+      width: 100%;
+      height: 40px;
+      font-size: 18px;
+      border-radius: 8px;
+    }
+
+    .result-box {
+      margin-top: 12px;
+      padding: 12px;
+      background: #eef6ff;
+      border: 1px solid #c9e2ff;
+      border-radius: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .result-label {
+      font-weight: 700;
+      color: #333;
+    }
+
+    .result-box .result {
+      font-size: 24px;
+      font-weight: 900;
+    }
+
+    @media (max-width: 759px) {
       body {
         padding: 16px;
       }
 
       h1 {
-        font-size: 20px;
+        font-size: 22px;
       }
 
-      input {
-        width: 70px;
-        font-size: 16px;
+      .description {
+        font-size: 14px;
       }
 
-      .step-btn {
-        width: 32px;
-        height: 36px;
-        font-size: 18px;
+      .desktop-table {
+        display: none;
+      }
+
+      .mobile-cards {
+        display: block;
+      }
+
+      .note {
+        font-size: 13px;
+      }
+    }
+
+    @media (min-width: 760px) {
+      .desktop-table {
+        display: block;
+      }
+
+      .mobile-cards {
+        display: none;
       }
     }
   </style>
@@ -168,28 +279,34 @@
   </div>
 
   <div class="toolbar">
-    <button onclick="addRow()">行を追加</button>
-    <button onclick="resetRows()">リセット</button>
+    <button onclick="addItem()">追加</button>
+    <button onclick="resetItems()">リセット</button>
   </div>
 
-  <div class="table-wrap">
-    <table>
-      <thead>
-        <tr>
-          <th>No.</th>
-          <th>種族値</th>
-          <th>個体値</th>
-          <th>性格補正</th>
-          <th>レベル</th>
-          <th>KIZUNA</th>
-          <th>バフ/デバフ</th>
-          <th>計算値</th>
-          <th>メモ</th>
-          <th>削除</th>
-        </tr>
-      </thead>
-      <tbody id="rows"></tbody>
-    </table>
+  <div class="desktop-table">
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>No.</th>
+            <th>種族値</th>
+            <th>個体値</th>
+            <th>性格補正</th>
+            <th>レベル</th>
+            <th>KIZUNA</th>
+            <th>バフ/デバフ</th>
+            <th>計算値</th>
+            <th>メモ</th>
+            <th>削除</th>
+          </tr>
+        </thead>
+        <tbody id="tableRows"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="mobile-cards">
+    <div id="cards" class="cards"></div>
   </div>
 
   <div class="note">
@@ -209,8 +326,11 @@
   </div>
 
   <script>
-    const rows = document.getElementById("rows");
-    const STORAGE_KEY = "eggryptoStatusCalculatorRowsV16";
+    const tableRows = document.getElementById("tableRows");
+    const cards = document.getElementById("cards");
+    const STORAGE_KEY = "eggryptoStatusCalculatorResponsiveV1";
+
+    let dataList = [];
 
     let pressTimer = null;
     let repeatTimer = null;
@@ -218,7 +338,7 @@
     let pressStartY = 0;
     let pressMoved = false;
 
-    function defaultRow() {
+    function defaultData() {
       return {
         base: 100,
         iv: 0,
@@ -236,180 +356,6 @@
         .replaceAll('"', "&quot;")
         .replaceAll("<", "&lt;")
         .replaceAll(">", "&gt;");
-    }
-
-    function numberControl(className, value, min, max, step) {
-      return `
-        <div class="number-control">
-          <button
-            type="button"
-            class="step-btn"
-            data-target="${className}"
-            data-step="-${step}"
-            aria-label="${className}を下げる"
-          >−</button>
-          <input
-            type="number"
-            class="${className}"
-            min="${min}"
-            max="${max}"
-            step="${step}"
-            value="${value}"
-            inputmode="decimal"
-          >
-          <button
-            type="button"
-            class="step-btn"
-            data-target="${className}"
-            data-step="${step}"
-            aria-label="${className}を上げる"
-          >＋</button>
-        </div>
-      `;
-    }
-
-    function createRow(data = {}) {
-      const tr = document.createElement("tr");
-      const row = { ...defaultRow(), ...data };
-
-      tr.innerHTML = `
-        <td class="no"></td>
-        <td>${numberControl("base", row.base, 0, 300, 1)}</td>
-        <td>${numberControl("iv", row.iv, 0, 32, 1)}</td>
-        <td>${numberControl("nature", row.nature, 0.9, 1.1, 0.1)}</td>
-        <td>${numberControl("level", row.level, 0, 100, 1)}</td>
-        <td>${numberControl("kizuna", row.kizuna, 0, 320, 10)}</td>
-        <td>${numberControl("buff", row.buff, -200, 200, 1)}</td>
-        <td class="result">0</td>
-        <td>
-          <input
-            type="text"
-            class="memo"
-            value="${escapeHtml(row.memo)}"
-            lang="ja"
-            inputmode="text"
-            autocomplete="off"
-            autocapitalize="off"
-            autocorrect="off"
-            spellcheck="false"
-          >
-        </td>
-        <td><button class="delete-btn" onclick="deleteRow(this)">削除</button></td>
-      `;
-
-      rows.appendChild(tr);
-
-      tr.querySelectorAll("input").forEach(input => {
-        if (!input.classList.contains("memo")) {
-          input.addEventListener("focus", () => {
-            setTimeout(() => input.select(), 0);
-          });
-        }
-
-        input.addEventListener("input", () => {
-          calculateAll();
-          saveRows();
-        });
-
-        input.addEventListener("change", () => {
-          normalizeInputs(tr);
-          calculateAll();
-          saveRows();
-        });
-
-        input.addEventListener("blur", () => {
-          normalizeInputs(tr);
-          calculateAll();
-          saveRows();
-        });
-      });
-
-      tr.querySelectorAll(".step-btn").forEach(button => {
-        button.addEventListener("pointerdown", startPress);
-        button.addEventListener("pointermove", movePress);
-        button.addEventListener("pointerup", endPress);
-        button.addEventListener("pointerleave", cancelPress);
-        button.addEventListener("pointercancel", cancelPress);
-        button.addEventListener("contextmenu", event => event.preventDefault());
-      });
-
-      normalizeInputs(tr);
-      calculateAll();
-      saveRows();
-    }
-
-    function startPress(event) {
-      event.preventDefault();
-
-      const button = event.currentTarget;
-      pressStartX = event.clientX;
-      pressStartY = event.clientY;
-      pressMoved = false;
-
-      button.dataset.pressed = "true";
-
-      stopTimers();
-
-      pressTimer = setTimeout(() => {
-        if (pressMoved || button.dataset.pressed !== "true") return;
-
-        const className = button.dataset.target;
-        const step = Number(button.dataset.step);
-
-        repeatTimer = setInterval(() => {
-          stepValue(button, className, step);
-        }, 90);
-      }, 350);
-    }
-
-    function movePress(event) {
-      const dx = Math.abs(event.clientX - pressStartX);
-      const dy = Math.abs(event.clientY - pressStartY);
-
-      if (dx > 10 || dy > 10) {
-        pressMoved = true;
-        cancelPress(event);
-      }
-    }
-
-    function endPress(event) {
-      const button = event.currentTarget;
-
-      if (!pressMoved && button.dataset.pressed === "true" && repeatTimer === null) {
-        const className = button.dataset.target;
-        const step = Number(button.dataset.step);
-        stepValue(button, className, step);
-      }
-
-      button.dataset.pressed = "false";
-      stopTimers();
-    }
-
-    function cancelPress(event) {
-      event.currentTarget.dataset.pressed = "false";
-      stopTimers();
-    }
-
-    function stopTimers() {
-      clearTimeout(pressTimer);
-      clearInterval(repeatTimer);
-      pressTimer = null;
-      repeatTimer = null;
-    }
-
-    function stepValue(button, className, step) {
-      const tr = button.closest("tr");
-      const input = tr.querySelector("." + className);
-      const current = parseNumber(input.value, 0);
-      const min = Number(input.min);
-      const max = Number(input.max);
-      const newValue = current + step;
-
-      input.value = clamp(newValue, min, max);
-
-      normalizeInputs(tr);
-      calculateAll();
-      saveRows();
     }
 
     function parseNumber(value, fallback = 0) {
@@ -432,112 +378,341 @@
       return number;
     }
 
-    function normalizeInputs(tr) {
-      const base = tr.querySelector(".base");
-      const iv = tr.querySelector(".iv");
-      const nature = tr.querySelector(".nature");
-      const level = tr.querySelector(".level");
-      const kizuna = tr.querySelector(".kizuna");
-      const buff = tr.querySelector(".buff");
+    function normalizeItem(item) {
+      item.base = clamp(parseNumber(item.base, 100), 0, 300);
+      item.iv = clamp(parseNumber(item.iv, 0), 0, 32);
 
-      base.value = clamp(parseNumber(base.value, 100), 0, 300);
-      iv.value = clamp(parseNumber(iv.value, 0), 0, 32);
+      const natureValue = clamp(parseNumber(item.nature, 1), 0.9, 1.1);
+      item.nature = Math.round(natureValue * 10) / 10;
 
-      const natureValue = clamp(parseNumber(nature.value, 1), 0.9, 1.1);
-      nature.value = Math.round(natureValue * 10) / 10;
+      item.level = clamp(parseNumber(item.level, 90), 0, 100);
 
-      level.value = clamp(parseNumber(level.value, 90), 0, 100);
+      const kizunaValue = clamp(parseNumber(item.kizuna, 0), 0, 320);
+      item.kizuna = Math.round(kizunaValue / 10) * 10;
 
-      const kizunaValue = clamp(parseNumber(kizuna.value, 0), 0, 320);
-      kizuna.value = Math.round(kizunaValue / 10) * 10;
-
-      buff.value = clamp(parseNumber(buff.value, 0), -200, 200);
+      item.buff = clamp(parseNumber(item.buff, 0), -200, 200);
+      item.memo = item.memo ?? "";
     }
 
-    function calculateRow(tr) {
-      const base = parseNumber(tr.querySelector(".base").value, 0);
-      const iv = parseNumber(tr.querySelector(".iv").value, 0);
-      const nature = parseNumber(tr.querySelector(".nature").value, 1);
-      const level = parseNumber(tr.querySelector(".level").value, 0);
-      const kizuna = parseNumber(tr.querySelector(".kizuna").value, 0);
-      const buff = parseNumber(tr.querySelector(".buff").value, 0);
+    function calculateItem(item) {
+      const base = parseNumber(item.base, 0);
+      const iv = parseNumber(item.iv, 0);
+      const nature = parseNumber(item.nature, 1);
+      const level = parseNumber(item.level, 0);
+      const kizuna = parseNumber(item.kizuna, 0);
+      const buff = parseNumber(item.buff, 0);
 
       const normalStatus = Math.floor((((base * 2 + iv) * level / 100) + 10) * nature);
       const buffRate = 1 + buff / 100;
-      const result = Math.floor((normalStatus + kizuna) * buffRate);
 
-      tr.querySelector(".result").textContent = result;
+      return Math.floor((normalStatus + kizuna) * buffRate);
     }
 
-    function calculateAll() {
-      [...rows.children].forEach((tr, index) => {
-        tr.querySelector(".no").textContent = index + 1;
-        calculateRow(tr);
+    function numberControl(index, key, value, min, max, step) {
+      return `
+        <div class="number-control">
+          <button
+            type="button"
+            class="step-btn"
+            data-index="${index}"
+            data-key="${key}"
+            data-step="-${step}"
+          >−</button>
+          <input
+            type="number"
+            data-index="${index}"
+            data-key="${key}"
+            min="${min}"
+            max="${max}"
+            step="${step}"
+            value="${value}"
+            inputmode="decimal"
+          >
+          <button
+            type="button"
+            class="step-btn"
+            data-index="${index}"
+            data-key="${key}"
+            data-step="${step}"
+          >＋</button>
+        </div>
+      `;
+    }
+
+    function field(label, index, key, value, min, max, step) {
+      return `
+        <div class="field">
+          <div class="label">${label}</div>
+          ${numberControl(index, key, value, min, max, step)}
+        </div>
+      `;
+    }
+
+    function render() {
+      dataList.forEach(normalizeItem);
+
+      tableRows.innerHTML = "";
+      cards.innerHTML = "";
+
+      dataList.forEach((item, index) => {
+        const result = calculateItem(item);
+
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${index + 1}</td>
+          <td>${numberControl(index, "base", item.base, 0, 300, 1)}</td>
+          <td>${numberControl(index, "iv", item.iv, 0, 32, 1)}</td>
+          <td>${numberControl(index, "nature", item.nature, 0.9, 1.1, 0.1)}</td>
+          <td>${numberControl(index, "level", item.level, 0, 100, 1)}</td>
+          <td>${numberControl(index, "kizuna", item.kizuna, 0, 320, 10)}</td>
+          <td>${numberControl(index, "buff", item.buff, -200, 200, 1)}</td>
+          <td class="result">${result}</td>
+          <td>
+            <input
+              type="text"
+              class="memo"
+              data-index="${index}"
+              data-key="memo"
+              value="${escapeHtml(item.memo)}"
+              lang="ja"
+              inputmode="text"
+              autocomplete="off"
+              autocapitalize="off"
+              autocorrect="off"
+              spellcheck="false"
+            >
+          </td>
+          <td><button class="delete-btn" onclick="deleteItem(${index})">削除</button></td>
+        `;
+        tableRows.appendChild(tr);
+
+        const card = document.createElement("div");
+        card.className = "card";
+        card.innerHTML = `
+          <div class="card-header">
+            <div class="card-title">No.${index + 1}</div>
+            <button type="button" class="delete-btn" onclick="deleteItem(${index})">削除</button>
+          </div>
+
+          ${field("種族値", index, "base", item.base, 0, 300, 1)}
+          ${field("個体値", index, "iv", item.iv, 0, 32, 1)}
+          ${field("性格補正", index, "nature", item.nature, 0.9, 1.1, 0.1)}
+          ${field("レベル", index, "level", item.level, 0, 100, 1)}
+          ${field("KIZUNA", index, "kizuna", item.kizuna, 0, 320, 10)}
+          ${field("バフ/デバフ", index, "buff", item.buff, -200, 200, 1)}
+
+          <div class="field">
+            <div class="label">メモ</div>
+            <input
+              type="text"
+              class="memo"
+              data-index="${index}"
+              data-key="memo"
+              value="${escapeHtml(item.memo)}"
+              lang="ja"
+              inputmode="text"
+              autocomplete="off"
+              autocapitalize="off"
+              autocorrect="off"
+              spellcheck="false"
+            >
+          </div>
+
+          <div class="result-box">
+            <div class="result-label">計算値</div>
+            <div class="result">${result}</div>
+          </div>
+        `;
+        cards.appendChild(card);
+      });
+
+      bindEvents();
+    }
+
+    function bindEvents() {
+      document.querySelectorAll("input[data-index]").forEach(input => {
+        if (input.dataset.key !== "memo") {
+          input.addEventListener("focus", () => {
+            setTimeout(() => input.select(), 0);
+          });
+        }
+
+        input.addEventListener("input", event => {
+          const index = Number(event.target.dataset.index);
+          const key = event.target.dataset.key;
+
+          dataList[index][key] = event.target.value;
+          saveItems();
+
+          renderResultsOnly();
+        });
+
+        input.addEventListener("change", event => {
+          const index = Number(event.target.dataset.index);
+          const key = event.target.dataset.key;
+
+          dataList[index][key] = event.target.value;
+          normalizeItem(dataList[index]);
+          saveItems();
+          render();
+        });
+
+        input.addEventListener("blur", event => {
+          const index = Number(event.target.dataset.index);
+          const key = event.target.dataset.key;
+
+          dataList[index][key] = event.target.value;
+          normalizeItem(dataList[index]);
+          saveItems();
+          render();
+        });
+      });
+
+      document.querySelectorAll(".step-btn").forEach(button => {
+        button.addEventListener("pointerdown", startPress);
+        button.addEventListener("pointermove", movePress);
+        button.addEventListener("pointerup", endPress);
+        button.addEventListener("pointerleave", cancelPress);
+        button.addEventListener("pointercancel", cancelPress);
+        button.addEventListener("contextmenu", event => event.preventDefault());
       });
     }
 
-    function addRow() {
-      createRow(defaultRow());
+    function renderResultsOnly() {
+      const tableResultCells = document.querySelectorAll(".desktop-table .result");
+      const cardResultCells = document.querySelectorAll(".mobile-cards .result");
+
+      dataList.forEach((item, index) => {
+        const result = calculateItem(item);
+
+        if (tableResultCells[index]) tableResultCells[index].textContent = result;
+        if (cardResultCells[index]) cardResultCells[index].textContent = result;
+      });
     }
 
-    function deleteRow(button) {
-      button.closest("tr").remove();
-      calculateAll();
-      saveRows();
+    function startPress(event) {
+      event.preventDefault();
+
+      const button = event.currentTarget;
+      pressStartX = event.clientX;
+      pressStartY = event.clientY;
+      pressMoved = false;
+
+      button.dataset.pressed = "true";
+
+      stopTimers();
+
+      pressTimer = setTimeout(() => {
+        if (pressMoved || button.dataset.pressed !== "true") return;
+
+        repeatTimer = setInterval(() => {
+          stepValue(button);
+        }, 90);
+      }, 350);
     }
 
-    function resetRows() {
-      if (!confirm("入力内容をリセットしますか？")) return;
+    function movePress(event) {
+      const dx = Math.abs(event.clientX - pressStartX);
+      const dy = Math.abs(event.clientY - pressStartY);
 
-      rows.innerHTML = "";
+      if (dx > 10 || dy > 10) {
+        pressMoved = true;
+        cancelPress(event);
+      }
+    }
 
-      for (let i = 0; i < 6; i++) {
-        createRow(defaultRow());
+    function endPress(event) {
+      const button = event.currentTarget;
+
+      if (!pressMoved && button.dataset.pressed === "true" && repeatTimer === null) {
+        stepValue(button);
       }
 
-      saveRows();
+      button.dataset.pressed = "false";
+      stopTimers();
     }
 
-    function saveRows() {
-      const data = [...rows.children].map(tr => ({
-        base: tr.querySelector(".base").value,
-        iv: tr.querySelector(".iv").value,
-        nature: tr.querySelector(".nature").value,
-        level: tr.querySelector(".level").value,
-        kizuna: tr.querySelector(".kizuna").value,
-        buff: tr.querySelector(".buff").value,
-        memo: tr.querySelector(".memo").value
-      }));
-
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    function cancelPress(event) {
+      event.currentTarget.dataset.pressed = "false";
+      stopTimers();
     }
 
-    function loadRows() {
+    function stopTimers() {
+      clearTimeout(pressTimer);
+      clearInterval(repeatTimer);
+      pressTimer = null;
+      repeatTimer = null;
+    }
+
+    function stepValue(button) {
+      const index = Number(button.dataset.index);
+      const key = button.dataset.key;
+      const step = Number(button.dataset.step);
+
+      const item = dataList[index];
+      const current = parseNumber(item[key], 0);
+
+      item[key] = current + step;
+      normalizeItem(item);
+
+      saveItems();
+      render();
+    }
+
+    function addItem() {
+      dataList.push(defaultData());
+      saveItems();
+      render();
+    }
+
+    function deleteItem(index) {
+      dataList.splice(index, 1);
+      saveItems();
+      render();
+    }
+
+    function resetItems() {
+      if (!confirm("入力内容をリセットしますか？")) return;
+
+      dataList = [];
+
+      for (let i = 0; i < 6; i++) {
+        dataList.push(defaultData());
+      }
+
+      saveItems();
+      render();
+    }
+
+    function saveItems() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(dataList));
+    }
+
+    function loadItems() {
       const saved = localStorage.getItem(STORAGE_KEY);
 
       if (saved) {
         try {
-          const data = JSON.parse(saved);
-          data.forEach(row => createRow(row));
+          dataList = JSON.parse(saved);
 
-          while (rows.children.length < 6) {
-            createRow(defaultRow());
+          while (dataList.length < 6) {
+            dataList.push(defaultData());
           }
         } catch {
-          for (let i = 0; i < 6; i++) {
-            createRow(defaultRow());
-          }
-        }
-      } else {
-        for (let i = 0; i < 6; i++) {
-          createRow(defaultRow());
+          dataList = [];
         }
       }
 
-      calculateAll();
+      if (!dataList.length) {
+        for (let i = 0; i < 6; i++) {
+          dataList.push(defaultData());
+        }
+      }
+
+      render();
     }
 
-    loadRows();
+    loadItems();
   </script>
 </body>
 </html>
