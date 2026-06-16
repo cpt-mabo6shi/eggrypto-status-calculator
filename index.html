@@ -279,8 +279,8 @@
   </div>
 
   <div class="toolbar">
-    <button onclick="addItem()">追加</button>
-    <button onclick="resetItems()">リセット</button>
+    <button type="button" onclick="addItem()">追加</button>
+    <button type="button" onclick="resetItems()">リセット</button>
   </div>
 
   <div class="desktop-table">
@@ -328,7 +328,7 @@
   <script>
     const tableRows = document.getElementById("tableRows");
     const cards = document.getElementById("cards");
-    const STORAGE_KEY = "eggryptoStatusCalculatorResponsiveV1";
+    const STORAGE_KEY = "eggryptoStatusCalculatorResponsiveV2";
 
     let dataList = [];
 
@@ -482,7 +482,7 @@
               spellcheck="false"
             >
           </td>
-          <td><button class="delete-btn" onclick="deleteItem(${index})">削除</button></td>
+          <td><button type="button" class="delete-btn" onclick="deleteItem(${index})">削除</button></td>
         `;
         tableRows.appendChild(tr);
 
@@ -543,7 +543,6 @@
 
           dataList[index][key] = event.target.value;
           saveItems();
-
           renderResultsOnly();
         });
 
@@ -672,8 +671,6 @@
     }
 
     function resetItems() {
-      if (!confirm("入力内容をリセットしますか？")) return;
-
       dataList = [];
 
       for (let i = 0; i < 6; i++) {
