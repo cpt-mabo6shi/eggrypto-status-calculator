@@ -19,6 +19,13 @@
   <meta name="twitter:description" content="エグリプトのモンスターステータスを簡単に計算できる便利ツールです。">
   <meta name="twitter:image" content="https://cpt-mabo6shi.github.io/eggrypto-status-calculator/ogp01.png">
 
+  <link rel="manifest" href="./manifest.json">
+  <link rel="apple-touch-icon" href="./icon-192.png">
+  <meta name="theme-color" content="#22b8c3">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="ステータス計算機">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+
   <style>
     html,
     body,
@@ -360,7 +367,7 @@
   </div>
 
   <div class="credit">
-    cpt.ツールズ｜EGGRYPTO Status Calculator ver.1.4
+    cpt.Tools｜EGGRYPTO Status Calculator ver.1.4
   </div>
 
   <script>
@@ -783,6 +790,12 @@
       }
 
       render();
+    }
+
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("./service-worker.js");
+      });
     }
 
     loadItems();
