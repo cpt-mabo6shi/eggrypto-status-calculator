@@ -337,13 +337,13 @@
   </div>
 
   <div class="credit">
-    cpt.ツールズ｜EGGRYPTO Status Calculator ver.1.3
+    cpt.マボロ志｜EGGRYPTO Status Calculator ver.1.3
   </div>
 
   <script>
     const tableRows = document.getElementById("tableRows");
     const cards = document.getElementById("cards");
-    const STORAGE_KEY = "eggryptoStatusCalculatorResponsiveV3";
+    const STORAGE_KEY = "eggryptoStatusCalculatorResponsiveV4";
 
     let dataList = [];
 
@@ -576,8 +576,9 @@
 
           dataList[index][key] = event.target.value;
           normalizeItem(dataList[index]);
+          syncItemInputs(index);
           saveItems();
-          render();
+          renderResultsOnly();
         });
 
         input.addEventListener("blur", event => {
@@ -586,8 +587,9 @@
 
           dataList[index][key] = event.target.value;
           normalizeItem(dataList[index]);
+          syncItemInputs(index);
           saveItems();
-          render();
+          renderResultsOnly();
         });
       });
 
@@ -598,6 +600,18 @@
         button.addEventListener("pointerleave", cancelPress);
         button.addEventListener("pointercancel", cancelPress);
         button.addEventListener("contextmenu", event => event.preventDefault());
+      });
+    }
+
+    function syncItemInputs(index) {
+      const item = dataList[index];
+
+      document.querySelectorAll(`input[data-index="${index}"]`).forEach(input => {
+        const key = input.dataset.key;
+
+        if (key in item) {
+          input.value = item[key];
+        }
       });
     }
 
@@ -679,8 +693,9 @@
       item[key] = current + step;
       normalizeItem(item);
 
+      syncItemInputs(index);
       saveItems();
-      render();
+      renderResultsOnly();
     }
 
     function addItem() {
