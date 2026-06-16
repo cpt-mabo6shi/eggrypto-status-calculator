@@ -328,7 +328,7 @@
   <script>
     const tableRows = document.getElementById("tableRows");
     const cards = document.getElementById("cards");
-    const STORAGE_KEY = "eggryptoStatusCalculatorResponsiveV2";
+    const STORAGE_KEY = "eggryptoStatusCalculatorResponsiveV3";
 
     let dataList = [];
 
@@ -348,6 +348,15 @@
         buff: 0,
         memo: ""
       };
+    }
+
+    function clearActiveFocus() {
+      if (
+        document.activeElement &&
+        typeof document.activeElement.blur === "function"
+      ) {
+        document.activeElement.blur();
+      }
     }
 
     function escapeHtml(value) {
@@ -591,6 +600,7 @@
 
     function startPress(event) {
       event.preventDefault();
+      clearActiveFocus();
 
       const button = event.currentTarget;
       pressStartX = event.clientX;
