@@ -122,7 +122,7 @@
       background: #fff;
     }
 
-    input[type="number"] {
+    input.numeric {
       -webkit-user-select: none;
       user-select: none;
       -webkit-touch-callout: none;
@@ -136,7 +136,7 @@
       -webkit-touch-callout: default;
     }
 
-    .desktop-table input[type="number"] {
+    .desktop-table input.numeric {
       width: 68px;
     }
 
@@ -255,19 +255,6 @@
       height: 40px;
       font-size: 18px;
       border-radius: 8px;
-    }
-
-    .detail-display {
-      grid-column: 2 / 3;
-      margin-top: -4px;
-      margin-bottom: 8px;
-      font-size: 13px;
-      color: #555;
-      min-height: 18px;
-      word-break: break-all;
-      -webkit-user-select: text;
-      user-select: text;
-      -webkit-touch-callout: default;
     }
 
     .result-box {
@@ -418,7 +405,7 @@
   <script>
     const tableRows = document.getElementById("tableRows");
     const cards = document.getElementById("cards");
-    const STORAGE_KEY = "eggryptoStatusCalculatorResponsiveV12";
+    const STORAGE_KEY = "eggryptoStatusCalculatorResponsiveV13";
 
     let dataList = [];
 
@@ -494,18 +481,8 @@
     }
 
     function parseDetail(value) {
-      const rawParts = String(value)
-        .split(".")
-        .map(part => part.trim())
-        .filter(part => part !== "");
-
-      const numbers = [];
-
-      rawParts.forEach(part => {
-        if (/^[+-]?\d+$/.test(part)) {
-          numbers.push(Number(part));
-        }
-      });
+      const matches = String(value).match(/[+-]?\d+/g) || [];
+      const numbers = matches.map(number => Number(number));
 
       const total = numbers.reduce((sum, number) => sum + number, 0);
 
@@ -564,14 +541,16 @@
             data-step="-${step}"
           >−</button>
           <input
-            type="number"
+            type="text"
+            class="numeric"
             data-index="${index}"
             data-key="${key}"
-            min="${min}"
-            max="${max}"
-            step="${step}"
+            data-min="${min}"
+            data-max="${max}"
+            data-step="${step}"
             value="${value}"
             inputmode="decimal"
+            autocomplete="off"
           >
           <button
             type="button"
@@ -672,9 +651,6 @@
               autocorrect="off"
               spellcheck="false"
             >
-            <div class="detail-display" data-detail-display="${index}">
-              ${escapeHtml(detailInfo.expression)}
-            </div>
           </div>
 
           <div class="field">
@@ -709,9 +685,10 @@
 
     function bindEvents() {
       document.querySelectorAll("input[data-index]").forEach(input => {
-        if (input.type === "number") {
+        if (input.classList.contains("numeric")) {
           input.addEventListener("focus", event => {
             event.target.dataset.replaceOnInput = "true";
+            event.target.dataset.previousValue = event.target.value;
           });
         }
 
@@ -720,23 +697,34 @@
           const key = event.target.dataset.key;
 
           if (
-            event.target.type === "number" &&
+            event.target.classList.contains("numeric") &&
             event.target.dataset.replaceOnInput === "true"
           ) {
-            if (event.data !== null && event.data !== undefined && event.data !== "") {
-              event.target.value = event.data;
-            } else {
-              const value = String(event.target.value);
-              event.target.value = value.slice(-1);
+            const previousValue = event.target.dataset.previousValue ?? "";
+            let nextValue = event.target.value;
+
+            if (
+              previousValue !== "" &&
+              nextValue.startsWith(previousValue) &&
+              nextValue.length > previousValue.length
+            ) {
+              nextValue = nextValue.slice(previousValue.length);
+            } else if (
+              event.data !== null &&
+              event.data !== undefined &&
+              event.data !== ""
+            ) {
+              nextValue = event.data;
             }
 
+            event.target.value = nextValue;
             event.target.dataset.replaceOnInput = "false";
           }
 
           dataList[index][key] = event.target.value;
 
           if (key === "detail") {
-            applyDetail(index);
+            applyDetail(index, false);
           }
 
           if (key === "buff") {
@@ -755,7 +743,7 @@
           dataList[index][key] = event.target.value;
 
           if (key === "detail") {
-            applyDetail(index);
+            applyDetail(index, true);
           }
 
           normalizeItem(dataList[index]);
@@ -771,7 +759,7 @@
           dataList[index][key] = event.target.value;
 
           if (key === "detail") {
-            applyDetail(index);
+            applyDetail(index, true);
           }
 
           normalizeItem(dataList[index]);
@@ -791,13 +779,21 @@
       });
     }
 
-    function applyDetail(index) {
+    function applyDetail(index, formatInput) {
       const item = dataList[index];
       const detailInfo = parseDetail(item.detail);
 
       item.buff = clamp(detailInfo.total, -200, 200);
+
+      if (formatInput) {
+        item.detail = detailInfo.expression;
+      }
+
       syncBuffInput(index);
-      syncDetailDisplay(index);
+
+      if (formatInput) {
+        syncDetailInput(index);
+      }
     }
 
     function syncBuffInput(index) {
@@ -814,18 +810,6 @@
       document.querySelectorAll(`input[data-index="${index}"][data-key="detail"]`).forEach(input => {
         input.value = item.detail;
       });
-
-      syncDetailDisplay(index);
-    }
-
-    function syncDetailDisplay(index) {
-      const item = dataList[index];
-      const detailInfo = parseDetail(item.detail);
-      const displays = document.querySelectorAll(`[data-detail-display="${index}"]`);
-
-      displays.forEach(display => {
-        display.textContent = detailInfo.expression;
-      });
     }
 
     function syncItemInputs(index) {
@@ -838,8 +822,6 @@
           input.value = item[key];
         }
       });
-
-      syncDetailDisplay(index);
     }
 
     function renderResultsOnly() {
@@ -850,8 +832,6 @@
         resultCells.forEach(resultCell => {
           resultCell.textContent = result;
         });
-
-        syncDetailDisplay(index);
       });
     }
 
@@ -960,14 +940,11 @@
     }
 
     function deleteRow() {
-      if (dataList.length <= 1) {
-        dataList[0] = defaultData();
-      } else {
+      if (dataList.length > 1) {
         dataList.pop();
+        saveItems();
+        render();
       }
-
-      saveItems();
-      render();
     }
 
     function saveItems() {
