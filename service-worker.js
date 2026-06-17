@@ -1,4 +1,5 @@
-const CACHE_NAME = "eggrypto-status-calculator-v21";
+
+const CACHE_NAME = "eggrypto-status-calculator-v22";
 
 const FILES_TO_CACHE = [
   "./",
