@@ -36,7 +36,9 @@
     .description,
     .note,
     .credit,
-    h1 {
+    h1,
+    th,
+    td {
       -webkit-user-select: none;
       user-select: none;
       -webkit-touch-callout: none;
@@ -60,6 +62,141 @@
       line-height: 1.7;
       color: #444;
       font-size: 15px;
+    }
+
+    button {
+      border: 1px solid #bbb;
+      background: #fff;
+      border-radius: 8px;
+      cursor: pointer;
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    button:hover {
+      background: #eef2ff;
+    }
+
+    .desktop-table {
+      display: block;
+    }
+
+    .mobile-cards {
+      display: none;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      background: #fff;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      max-width: 100%;
+    }
+
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      min-width: 1480px;
+    }
+
+    th, td {
+      border-bottom: 1px solid #e5e5e5;
+      padding: 8px;
+      text-align: center;
+      white-space: nowrap;
+    }
+
+    th {
+      background: #f0f2f5;
+      font-weight: 700;
+    }
+
+    input {
+      width: 78px;
+      height: 38px;
+      padding: 6px;
+      font-size: 16px;
+      text-align: right;
+      box-sizing: border-box;
+      border: 1px solid #aaa;
+      border-radius: 6px;
+      background: #fff;
+    }
+
+    input[type="number"] {
+      -webkit-user-select: none;
+      user-select: none;
+      -webkit-touch-callout: none;
+    }
+
+    input.memo,
+    input.detail {
+      text-align: left;
+      -webkit-user-select: text;
+      user-select: text;
+      -webkit-touch-callout: default;
+    }
+
+    .desktop-table input.memo,
+    .desktop-table input.detail {
+      width: 180px;
+    }
+
+    .number-control {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .step-btn {
+      width: 30px;
+      height: 34px;
+      padding: 0;
+      font-size: 18px;
+      font-weight: 800;
+      line-height: 1;
+      border: 1px solid #aaa;
+      background: #fff;
+      border-radius: 6px;
+    }
+
+    .step-btn:active {
+      background: #dfe7ff;
+      transform: translateY(1px);
+    }
+
+    .detail-display {
+      margin-top: 4px;
+      font-size: 12px;
+      color: #555;
+      min-height: 16px;
+      word-break: break-all;
+      -webkit-user-select: text;
+      user-select: text;
+      -webkit-touch-callout: default;
+    }
+
+    .result {
+      font-weight: 900;
+      font-size: 18px;
+      color: #004f66;
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: 6px;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .action-buttons button {
+      padding: 8px 8px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .delete-btn {
+      color: #b00020;
     }
 
     .cards {
@@ -102,80 +239,32 @@
       color: #333;
     }
 
-    .number-control {
+    .card .number-control {
       display: grid;
       grid-template-columns: 42px 1fr 42px;
       gap: 6px;
       align-items: center;
     }
 
-    button {
-      border: 1px solid #bbb;
-      background: #fff;
-      border-radius: 8px;
-      cursor: pointer;
-      touch-action: manipulation;
-      -webkit-tap-highlight-color: transparent;
-    }
-
-    button:hover {
-      background: #eef2ff;
-    }
-
-    .step-btn {
+    .card .step-btn {
       width: 42px;
       height: 40px;
-      padding: 0;
       font-size: 20px;
-      font-weight: 800;
-      line-height: 1;
-      border: 1px solid #aaa;
-      background: #fff;
       border-radius: 8px;
     }
 
-    .step-btn:active {
-      background: #dfe7ff;
-      transform: translateY(1px);
-    }
-
-    input {
+    .card input {
       width: 100%;
       height: 40px;
-      padding: 6px;
       font-size: 18px;
-      text-align: right;
-      box-sizing: border-box;
-      border: 1px solid #aaa;
       border-radius: 8px;
-      background: #fff;
     }
 
-    input[type="number"] {
-      -webkit-user-select: none;
-      user-select: none;
-      -webkit-touch-callout: none;
-    }
-
-    input.memo,
-    input.detail {
-      text-align: left;
-      -webkit-user-select: text;
-      user-select: text;
-      -webkit-touch-callout: default;
-    }
-
-    .detail-display {
+    .card .detail-display {
       grid-column: 2 / 3;
       margin-top: -4px;
       margin-bottom: 8px;
       font-size: 13px;
-      color: #555;
-      min-height: 18px;
-      word-break: break-all;
-      -webkit-user-select: text;
-      user-select: text;
-      -webkit-touch-callout: default;
     }
 
     .result-box {
@@ -194,10 +283,9 @@
       color: #333;
     }
 
-    .result {
+    .result-box .result {
       font-size: 24px;
       font-weight: 900;
-      color: #004f66;
     }
 
     .card-actions {
@@ -209,17 +297,13 @@
 
     .card-actions button {
       padding: 10px 6px;
-      font-size: 13px;
+      font-size: 12px;
       font-weight: 700;
-    }
-
-    .delete-btn {
-      color: #b00020;
     }
 
     .note {
       margin-top: 18px;
-      max-width: 760px;
+      max-width: 900px;
       font-size: 14px;
       color: #555;
       line-height: 1.7;
@@ -227,7 +311,7 @@
 
     .credit {
       margin-top: 24px;
-      max-width: 760px;
+      max-width: 900px;
       font-size: 13px;
       color: #777;
       text-align: right;
@@ -246,12 +330,26 @@
         font-size: 14px;
       }
 
+      .desktop-table {
+        display: none;
+      }
+
+      .mobile-cards {
+        display: block;
+      }
+
       .note {
         font-size: 13px;
       }
+    }
 
-      .card-actions button {
-        font-size: 12px;
+    @media (min-width: 760px) {
+      .desktop-table {
+        display: block;
+      }
+
+      .mobile-cards {
+        display: none;
       }
     }
   </style>
@@ -264,7 +362,32 @@
     種族値・個体値・性格補正・レベル・KIZUNA・バフ/デバフを入力すると、計算値を表示します。
   </div>
 
-  <div id="cards" class="cards"></div>
+  <div class="desktop-table">
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>No.</th>
+            <th>種族値</th>
+            <th>個体値</th>
+            <th>性格補正</th>
+            <th>レベル</th>
+            <th>KIZUNA</th>
+            <th>バフ/デバフ</th>
+            <th>内訳</th>
+            <th>計算値</th>
+            <th>メモ</th>
+            <th>操作</th>
+          </tr>
+        </thead>
+        <tbody id="tableRows"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="mobile-cards">
+    <div id="cards" class="cards"></div>
+  </div>
 
   <div class="note">
     計算の流れ：<br>
@@ -278,7 +401,7 @@
     +10％なら10、-10％なら-10、補正なしなら0を入力します。<br><br>
 
     内訳欄には、複数のバフ/デバフを「.」で区切って入力すると、自動計算します。<br>
-    例：12.15.15.15.16.-10
+    例：12.15.15.15.16.-20
   </div>
 
   <div class="credit">
@@ -286,8 +409,9 @@
   </div>
 
   <script>
+    const tableRows = document.getElementById("tableRows");
     const cards = document.getElementById("cards");
-    const STORAGE_KEY = "eggryptoStatusCalculatorCardV8";
+    const STORAGE_KEY = "eggryptoStatusCalculatorResponsiveV9";
 
     let dataList = [];
 
@@ -447,14 +571,74 @@
       `;
     }
 
+    function actionButtons(index, mobile = false) {
+      const className = mobile ? "card-actions" : "action-buttons";
+
+      return `
+        <div class="${className}">
+          <button type="button" onclick="addItem(${index})">カードを追加</button>
+          <button type="button" onclick="resetItem(${index})">入力をリセット</button>
+          <button type="button" class="delete-btn" onclick="deleteItem(${index})">カードを削除</button>
+        </div>
+      `;
+    }
+
     function render() {
       dataList.forEach(normalizeItem);
 
+      tableRows.innerHTML = "";
       cards.innerHTML = "";
 
       dataList.forEach((item, index) => {
         const result = calculateItem(item);
         const detailInfo = parseDetail(item.detail);
+
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${index + 1}</td>
+          <td>${numberControl(index, "base", item.base, 0, 300, 1)}</td>
+          <td>${numberControl(index, "iv", item.iv, 0, 32, 1)}</td>
+          <td>${numberControl(index, "nature", item.nature, 0.9, 1.1, 0.1)}</td>
+          <td>${numberControl(index, "level", item.level, 0, 100, 1)}</td>
+          <td>${numberControl(index, "kizuna", item.kizuna, 0, 320, 10)}</td>
+          <td>${numberControl(index, "buff", item.buff, -200, 200, 1)}</td>
+          <td>
+            <input
+              type="text"
+              class="detail"
+              data-index="${index}"
+              data-key="detail"
+              value="${escapeHtml(item.detail)}"
+              placeholder="例：12.15.15.-20"
+              inputmode="decimal"
+              autocomplete="off"
+              autocapitalize="off"
+              autocorrect="off"
+              spellcheck="false"
+            >
+            <div class="detail-display" data-detail-display="${index}">
+              ${escapeHtml(detailInfo.expression)}
+            </div>
+          </td>
+          <td class="result" data-result="${index}">${result}</td>
+          <td>
+            <input
+              type="text"
+              class="memo"
+              data-index="${index}"
+              data-key="memo"
+              value="${escapeHtml(item.memo)}"
+              lang="ja"
+              inputmode="text"
+              autocomplete="off"
+              autocapitalize="off"
+              autocorrect="off"
+              spellcheck="false"
+            >
+          </td>
+          <td>${actionButtons(index, false)}</td>
+        `;
+        tableRows.appendChild(tr);
 
         const card = document.createElement("div");
         card.className = "card";
@@ -512,11 +696,7 @@
             <div class="result" data-result="${index}">${result}</div>
           </div>
 
-          <div class="card-actions">
-            <button type="button" onclick="addItem(${index})">カードを追加</button>
-            <button type="button" onclick="resetItem(${index})">入力をリセット</button>
-            <button type="button" class="delete-btn" onclick="deleteItem(${index})">カードを削除</button>
-          </div>
+          ${actionButtons(index, true)}
         `;
         cards.appendChild(card);
       });
@@ -638,11 +818,11 @@
     function syncDetailDisplay(index) {
       const item = dataList[index];
       const detailInfo = parseDetail(item.detail);
-      const display = document.querySelector(`[data-detail-display="${index}"]`);
+      const displays = document.querySelectorAll(`[data-detail-display="${index}"]`);
 
-      if (display) {
+      displays.forEach(display => {
         display.textContent = detailInfo.expression;
-      }
+      });
     }
 
     function syncItemInputs(index) {
@@ -662,11 +842,11 @@
     function renderResultsOnly() {
       dataList.forEach((item, index) => {
         const result = calculateItem(item);
-        const resultCell = document.querySelector(`[data-result="${index}"]`);
+        const resultCells = document.querySelectorAll(`[data-result="${index}"]`);
 
-        if (resultCell) {
+        resultCells.forEach(resultCell => {
           resultCell.textContent = result;
-        }
+        });
 
         syncDetailDisplay(index);
       });
