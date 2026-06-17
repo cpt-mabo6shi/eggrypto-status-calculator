@@ -4,18 +4,18 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <title>cpt.Tools-Σ ver.1.4</title>
+  <title>エグリプト ステータス計算機 ver.1.4</title>
 
   <meta name="description" content="エグリプトのモンスターステータスを簡単に計算するためのツールです。">
 
-  <meta property="og:title" content="cpt.Tools-Σ ver.1.4">
+  <meta property="og:title" content="エグリプト ステータス計算機 ver.1.4">
   <meta property="og:description" content="エグリプトのモンスターステータスを簡単に計算できる便利ツールです。">
   <meta property="og:image" content="https://cpt-mabo6shi.github.io/eggrypto-status-calculator/ogp01.png">
   <meta property="og:url" content="https://cpt-mabo6shi.github.io/eggrypto-status-calculator/">
   <meta property="og:type" content="website">
 
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="cpt.Tools-Σ ver.1.4">
+  <meta name="twitter:title" content="エグリプト ステータス計算機 ver.1.4">
   <meta name="twitter:description" content="エグリプトのモンスターステータスを簡単に計算できる便利ツールです。">
   <meta name="twitter:image" content="https://cpt-mabo6shi.github.io/eggrypto-status-calculator/ogp01.png">
 
@@ -23,7 +23,7 @@
   <link rel="apple-touch-icon" href="./icon-192.png">
   <meta name="theme-color" content="#22b8c3">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-title" content="cpt.Tools-Σ">
+  <meta name="apple-mobile-web-app-title" content="ステ計">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
 
   <style>
@@ -36,9 +36,7 @@
     .description,
     .note,
     .credit,
-    h1,
-    th,
-    td {
+    h1 {
       -webkit-user-select: none;
       user-select: none;
       -webkit-touch-callout: none;
@@ -58,155 +56,22 @@
     }
 
     .description {
-      margin-bottom: 20px;
+      margin-bottom: 18px;
       line-height: 1.7;
       color: #444;
       font-size: 15px;
     }
 
-    .toolbar {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      margin-bottom: 16px;
-    }
-
-    button {
-      border: 1px solid #bbb;
-      background: #fff;
-      border-radius: 8px;
-      cursor: pointer;
-      touch-action: manipulation;
-      -webkit-tap-highlight-color: transparent;
-    }
-
-    .toolbar button {
-      padding: 10px 14px;
-      font-size: 15px;
-      font-weight: 700;
-    }
-
-    button:hover {
-      background: #eef2ff;
-    }
-
-    .desktop-table {
-      display: block;
-    }
-
-    .mobile-cards {
-      display: none;
-    }
-
-    .table-wrap {
-      overflow-x: auto;
-      background: #fff;
-      border: 1px solid #ddd;
-      border-radius: 8px;
-    }
-
-    table {
-      border-collapse: collapse;
-      width: 100%;
-      min-width: 1120px;
-    }
-
-    th, td {
-      border-bottom: 1px solid #e5e5e5;
-      padding: 8px;
-      text-align: center;
-      white-space: nowrap;
-    }
-
-    th {
-      background: #f0f2f5;
-      font-weight: 700;
-    }
-
-    input {
-      width: 78px;
-      height: 38px;
-      padding: 6px;
-      font-size: 16px;
-      text-align: right;
-      box-sizing: border-box;
-      border: 1px solid #aaa;
-      border-radius: 6px;
-      background: #fff;
-    }
-
-    input[type="number"] {
-      -webkit-user-select: none;
-      user-select: none;
-      -webkit-touch-callout: none;
-    }
-
-    input.memo {
-      width: 180px;
-      text-align: left;
-      -webkit-user-select: text;
-      user-select: text;
-      -webkit-touch-callout: default;
-    }
-
-    .number-control {
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-    }
-
-    .step-btn {
-      width: 30px;
-      height: 34px;
-      padding: 0;
-      font-size: 18px;
-      font-weight: 800;
-      line-height: 1;
-      border: 1px solid #aaa;
-      background: #fff;
-      border-radius: 6px;
-    }
-
-    .step-btn:active {
-      background: #dfe7ff;
-      transform: translateY(1px);
-    }
-
-    .result {
-      font-weight: 800;
-      font-size: 18px;
-      color: #004f66;
-    }
-
-    .delete-btn {
-      padding: 8px 10px;
-      color: #b00020;
-      font-size: 13px;
-    }
-
-    .note {
-      margin-top: 18px;
-      font-size: 14px;
-      color: #555;
-      line-height: 1.7;
-    }
-
-    .credit {
-      margin-top: 24px;
-      font-size: 13px;
-      color: #777;
-      text-align: right;
-    }
-
     .cards {
       display: grid;
-      gap: 14px;
+      gap: 16px;
+      max-width: 760px;
     }
 
     .card {
       background: #fff;
       border: 1px solid #ddd;
-      border-radius: 12px;
+      border-radius: 14px;
       padding: 14px;
       box-shadow: 0 2px 8px rgba(0,0,0,0.04);
     }
@@ -237,24 +102,80 @@
       color: #333;
     }
 
-    .card .number-control {
+    .number-control {
       display: grid;
       grid-template-columns: 42px 1fr 42px;
       gap: 6px;
       align-items: center;
     }
 
-    .card .step-btn {
-      width: 42px;
-      height: 40px;
-      font-size: 20px;
+    button {
+      border: 1px solid #bbb;
+      background: #fff;
+      border-radius: 8px;
+      cursor: pointer;
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
     }
 
-    .card input {
+    button:hover {
+      background: #eef2ff;
+    }
+
+    .step-btn {
+      width: 42px;
+      height: 40px;
+      padding: 0;
+      font-size: 20px;
+      font-weight: 800;
+      line-height: 1;
+      border: 1px solid #aaa;
+      background: #fff;
+      border-radius: 8px;
+    }
+
+    .step-btn:active {
+      background: #dfe7ff;
+      transform: translateY(1px);
+    }
+
+    input {
       width: 100%;
       height: 40px;
+      padding: 6px;
       font-size: 18px;
+      text-align: right;
+      box-sizing: border-box;
+      border: 1px solid #aaa;
       border-radius: 8px;
+      background: #fff;
+    }
+
+    input[type="number"] {
+      -webkit-user-select: none;
+      user-select: none;
+      -webkit-touch-callout: none;
+    }
+
+    input.memo,
+    input.detail {
+      text-align: left;
+      -webkit-user-select: text;
+      user-select: text;
+      -webkit-touch-callout: default;
+    }
+
+    .detail-display {
+      grid-column: 2 / 3;
+      margin-top: -4px;
+      margin-bottom: 8px;
+      font-size: 13px;
+      color: #555;
+      min-height: 18px;
+      word-break: break-all;
+      -webkit-user-select: text;
+      user-select: text;
+      -webkit-touch-callout: default;
     }
 
     .result-box {
@@ -273,9 +194,43 @@
       color: #333;
     }
 
-    .result-box .result {
+    .result {
       font-size: 24px;
       font-weight: 900;
+      color: #004f66;
+    }
+
+    .card-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .card-actions button {
+      padding: 10px 6px;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .delete-btn {
+      color: #b00020;
+    }
+
+    .note {
+      margin-top: 18px;
+      max-width: 760px;
+      font-size: 14px;
+      color: #555;
+      line-height: 1.7;
+    }
+
+    .credit {
+      margin-top: 24px;
+      max-width: 760px;
+      font-size: 13px;
+      color: #777;
+      text-align: right;
     }
 
     @media (max-width: 759px) {
@@ -291,68 +246,25 @@
         font-size: 14px;
       }
 
-      .desktop-table {
-        display: none;
-      }
-
-      .mobile-cards {
-        display: block;
-      }
-
       .note {
         font-size: 13px;
       }
-    }
 
-    @media (min-width: 760px) {
-      .desktop-table {
-        display: block;
-      }
-
-      .mobile-cards {
-        display: none;
+      .card-actions button {
+        font-size: 12px;
       }
     }
   </style>
 </head>
 <body>
-  <h1>cpt.Tools-Σ ver.1.4</h1>
+  <h1>エグリプト ステータス計算機 ver.1.4</h1>
 
   <div class="description">
     エグリプトのモンスターステータスを簡単に計算するためのツールです。<br>
     種族値・個体値・性格補正・レベル・KIZUNA・バフ/デバフを入力すると、計算値を表示します。
   </div>
 
-  <div class="toolbar">
-    <button type="button" onclick="addItem()">追加</button>
-    <button type="button" onclick="resetItems()">リセット</button>
-  </div>
-
-  <div class="desktop-table">
-    <div class="table-wrap">
-      <table>
-        <thead>
-          <tr>
-            <th>No.</th>
-            <th>種族値</th>
-            <th>個体値</th>
-            <th>性格補正</th>
-            <th>レベル</th>
-            <th>KIZUNA</th>
-            <th>バフ/デバフ</th>
-            <th>計算値</th>
-            <th>メモ</th>
-            <th>削除</th>
-          </tr>
-        </thead>
-        <tbody id="tableRows"></tbody>
-      </table>
-    </div>
-  </div>
-
-  <div class="mobile-cards">
-    <div id="cards" class="cards"></div>
-  </div>
+  <div id="cards" class="cards"></div>
 
   <div class="note">
     計算の流れ：<br>
@@ -363,17 +275,19 @@
     KIZUNAが+20なら、KIZUNA欄に20を入力します。<br><br>
 
     バフ/デバフ欄には、ステータスの増減率を％で入力してください。<br>
-    +10％なら10、-10％なら-10、補正なしなら0を入力します。
+    +10％なら10、-10％なら-10、補正なしなら0を入力します。<br><br>
+
+    内訳欄には、複数のバフ/デバフを「.」で区切って入力すると、自動計算します。<br>
+    例：12.15.15.15.16.-10
   </div>
 
   <div class="credit">
-    cpt.Tools-Σ ver.1.4｜EGGRYPTO Status Calculator
+    cpt.Tools｜EGGRYPTO Status Calculator ver.1.4
   </div>
 
   <script>
-    const tableRows = document.getElementById("tableRows");
     const cards = document.getElementById("cards");
-    const STORAGE_KEY = "eggryptoStatusCalculatorResponsiveV7";
+    const STORAGE_KEY = "eggryptoStatusCalculatorCardV8";
 
     let dataList = [];
 
@@ -391,6 +305,7 @@
         level: 90,
         kizuna: 0,
         buff: 0,
+        detail: "",
         memo: ""
       };
     }
@@ -432,6 +347,35 @@
       return number;
     }
 
+    function parseDetail(value) {
+      const rawParts = String(value)
+        .split(".")
+        .map(part => part.trim())
+        .filter(part => part !== "");
+
+      const numbers = [];
+
+      rawParts.forEach(part => {
+        if (/^[+-]?\d+$/.test(part)) {
+          numbers.push(Number(part));
+        }
+      });
+
+      const total = numbers.reduce((sum, number) => sum + number, 0);
+
+      const expression = numbers
+        .map((number, index) => {
+          if (index === 0) return String(number);
+          return number >= 0 ? `+${number}` : String(number);
+        })
+        .join("");
+
+      return {
+        total,
+        expression
+      };
+    }
+
     function normalizeItem(item) {
       item.base = clamp(parseNumber(item.base, 100), 0, 300);
       item.iv = clamp(parseNumber(item.iv, 0), 0, 32);
@@ -445,6 +389,7 @@
       item.kizuna = Math.round(kizunaValue / 10) * 10;
 
       item.buff = clamp(parseNumber(item.buff, 0), -200, 200);
+      item.detail = item.detail ?? "";
       item.memo = item.memo ?? "";
     }
 
@@ -505,47 +450,17 @@
     function render() {
       dataList.forEach(normalizeItem);
 
-      tableRows.innerHTML = "";
       cards.innerHTML = "";
 
       dataList.forEach((item, index) => {
         const result = calculateItem(item);
-
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-          <td>${index + 1}</td>
-          <td>${numberControl(index, "base", item.base, 0, 300, 1)}</td>
-          <td>${numberControl(index, "iv", item.iv, 0, 32, 1)}</td>
-          <td>${numberControl(index, "nature", item.nature, 0.9, 1.1, 0.1)}</td>
-          <td>${numberControl(index, "level", item.level, 0, 100, 1)}</td>
-          <td>${numberControl(index, "kizuna", item.kizuna, 0, 320, 10)}</td>
-          <td>${numberControl(index, "buff", item.buff, -200, 200, 1)}</td>
-          <td class="result">${result}</td>
-          <td>
-            <input
-              type="text"
-              class="memo"
-              data-index="${index}"
-              data-key="memo"
-              value="${escapeHtml(item.memo)}"
-              lang="ja"
-              inputmode="text"
-              autocomplete="off"
-              autocapitalize="off"
-              autocorrect="off"
-              spellcheck="false"
-            >
-          </td>
-          <td><button type="button" class="delete-btn" onclick="deleteItem(${index})">削除</button></td>
-        `;
-        tableRows.appendChild(tr);
+        const detailInfo = parseDetail(item.detail);
 
         const card = document.createElement("div");
         card.className = "card";
         card.innerHTML = `
           <div class="card-header">
             <div class="card-title">No.${index + 1}</div>
-            <button type="button" class="delete-btn" onclick="deleteItem(${index})">削除</button>
           </div>
 
           ${field("種族値", index, "base", item.base, 0, 300, 1)}
@@ -554,6 +469,26 @@
           ${field("レベル", index, "level", item.level, 0, 100, 1)}
           ${field("KIZUNA", index, "kizuna", item.kizuna, 0, 320, 10)}
           ${field("バフ/デバフ", index, "buff", item.buff, -200, 200, 1)}
+
+          <div class="field">
+            <div class="label">内訳</div>
+            <input
+              type="text"
+              class="detail"
+              data-index="${index}"
+              data-key="detail"
+              value="${escapeHtml(item.detail)}"
+              placeholder="例：12.15.15.-20"
+              inputmode="decimal"
+              autocomplete="off"
+              autocapitalize="off"
+              autocorrect="off"
+              spellcheck="false"
+            >
+            <div class="detail-display" data-detail-display="${index}">
+              ${escapeHtml(detailInfo.expression)}
+            </div>
+          </div>
 
           <div class="field">
             <div class="label">メモ</div>
@@ -574,7 +509,13 @@
 
           <div class="result-box">
             <div class="result-label">計算値</div>
-            <div class="result">${result}</div>
+            <div class="result" data-result="${index}">${result}</div>
+          </div>
+
+          <div class="card-actions">
+            <button type="button" onclick="addItem(${index})">カードを追加</button>
+            <button type="button" onclick="resetItem(${index})">入力をリセット</button>
+            <button type="button" class="delete-btn" onclick="deleteItem(${index})">カードを削除</button>
           </div>
         `;
         cards.appendChild(card);
@@ -585,7 +526,7 @@
 
     function bindEvents() {
       document.querySelectorAll("input[data-index]").forEach(input => {
-        if (input.dataset.key !== "memo") {
+        if (input.type === "number") {
           input.addEventListener("focus", event => {
             event.target.dataset.replaceOnInput = "true";
           });
@@ -596,7 +537,7 @@
           const key = event.target.dataset.key;
 
           if (
-            key !== "memo" &&
+            event.target.type === "number" &&
             event.target.dataset.replaceOnInput === "true"
           ) {
             if (event.data !== null && event.data !== undefined && event.data !== "") {
@@ -610,6 +551,16 @@
           }
 
           dataList[index][key] = event.target.value;
+
+          if (key === "detail") {
+            applyDetail(index);
+          }
+
+          if (key === "buff") {
+            dataList[index].detail = "";
+            syncDetailInput(index);
+          }
+
           saveItems();
           renderResultsOnly();
         });
@@ -619,6 +570,11 @@
           const key = event.target.dataset.key;
 
           dataList[index][key] = event.target.value;
+
+          if (key === "detail") {
+            applyDetail(index);
+          }
+
           normalizeItem(dataList[index]);
           syncItemInputs(index);
           saveItems();
@@ -630,6 +586,11 @@
           const key = event.target.dataset.key;
 
           dataList[index][key] = event.target.value;
+
+          if (key === "detail") {
+            applyDetail(index);
+          }
+
           normalizeItem(dataList[index]);
           syncItemInputs(index);
           saveItems();
@@ -647,6 +608,43 @@
       });
     }
 
+    function applyDetail(index) {
+      const item = dataList[index];
+      const detailInfo = parseDetail(item.detail);
+
+      item.buff = clamp(detailInfo.total, -200, 200);
+      syncBuffInput(index);
+      syncDetailDisplay(index);
+    }
+
+    function syncBuffInput(index) {
+      const item = dataList[index];
+
+      document.querySelectorAll(`input[data-index="${index}"][data-key="buff"]`).forEach(input => {
+        input.value = item.buff;
+      });
+    }
+
+    function syncDetailInput(index) {
+      const item = dataList[index];
+
+      document.querySelectorAll(`input[data-index="${index}"][data-key="detail"]`).forEach(input => {
+        input.value = item.detail;
+      });
+
+      syncDetailDisplay(index);
+    }
+
+    function syncDetailDisplay(index) {
+      const item = dataList[index];
+      const detailInfo = parseDetail(item.detail);
+      const display = document.querySelector(`[data-detail-display="${index}"]`);
+
+      if (display) {
+        display.textContent = detailInfo.expression;
+      }
+    }
+
     function syncItemInputs(index) {
       const item = dataList[index];
 
@@ -657,17 +655,20 @@
           input.value = item[key];
         }
       });
+
+      syncDetailDisplay(index);
     }
 
     function renderResultsOnly() {
-      const tableResultCells = document.querySelectorAll(".desktop-table .result");
-      const cardResultCells = document.querySelectorAll(".mobile-cards .result");
-
       dataList.forEach((item, index) => {
         const result = calculateItem(item);
+        const resultCell = document.querySelector(`[data-result="${index}"]`);
 
-        if (tableResultCells[index]) tableResultCells[index].textContent = result;
-        if (cardResultCells[index]) cardResultCells[index].textContent = result;
+        if (resultCell) {
+          resultCell.textContent = result;
+        }
+
+        syncDetailDisplay(index);
       });
     }
 
@@ -735,30 +736,34 @@
       const current = parseNumber(item[key], 0);
 
       item[key] = current + step;
-      normalizeItem(item);
 
+      if (key === "buff") {
+        item.detail = "";
+      }
+
+      normalizeItem(item);
       syncItemInputs(index);
       saveItems();
       renderResultsOnly();
     }
 
-    function addItem() {
-      dataList.push(defaultData());
+    function addItem(index) {
+      dataList.splice(index + 1, 0, defaultData());
+      saveItems();
+      render();
+    }
+
+    function resetItem(index) {
+      dataList[index] = defaultData();
       saveItems();
       render();
     }
 
     function deleteItem(index) {
-      dataList.splice(index, 1);
-      saveItems();
-      render();
-    }
-
-    function resetItems() {
-      dataList = [];
-
-      for (let i = 0; i < 6; i++) {
-        dataList.push(defaultData());
+      if (dataList.length <= 1) {
+        dataList[0] = defaultData();
+      } else {
+        dataList.splice(index, 1);
       }
 
       saveItems();
@@ -775,19 +780,13 @@
       if (saved) {
         try {
           dataList = JSON.parse(saved);
-
-          while (dataList.length < 6) {
-            dataList.push(defaultData());
-          }
         } catch {
           dataList = [];
         }
       }
 
       if (!dataList.length) {
-        for (let i = 0; i < 6; i++) {
-          dataList.push(defaultData());
-        }
+        dataList = [defaultData()];
       }
 
       render();
