@@ -1,6 +1,6 @@
 {
-  "name": "cpt.Tools-Σ",
-  "short_name": "cpt.Tools-Σ",
+  "name": "エグリプト ステータス計算機",
+  "short_name": "ステ計",
   "description": "エグリプトのモンスターステータスを簡単に計算するためのツールです。",
   "start_url": "./",
   "scope": "./",
