@@ -123,9 +123,9 @@
     }
 
     input.numeric {
-      -webkit-user-select: none;
-      user-select: none;
-      -webkit-touch-callout: none;
+      -webkit-user-select: text;
+      user-select: text;
+      -webkit-touch-callout: default;
     }
 
     input.memo,
@@ -405,7 +405,7 @@
   <script>
     const tableRows = document.getElementById("tableRows");
     const cards = document.getElementById("cards");
-    const STORAGE_KEY = "eggryptoStatusCalculatorResponsiveV15";
+    const STORAGE_KEY = "eggryptoStatusCalculatorResponsiveV16";
 
     let dataList = [];
 
@@ -550,6 +550,9 @@
             data-step="${step}"
             value="${value}"
             autocomplete="off"
+            autocapitalize="off"
+            autocorrect="off"
+            spellcheck="false"
           >
           <button
             type="button"
@@ -589,7 +592,6 @@
 
       dataList.forEach((item, index) => {
         const result = calculateItem(item);
-        const detailInfo = parseDetail(item.detail);
 
         const tr = document.createElement("tr");
         tr.innerHTML = `
@@ -684,8 +686,13 @@
       document.querySelectorAll("input[data-index]").forEach(input => {
         if (input.classList.contains("numeric")) {
           input.addEventListener("focus", event => {
-            event.target.dataset.previousValue = event.target.value;
-            event.target.value = "";
+            setTimeout(() => {
+              try {
+                event.target.select();
+              } catch {
+                event.target.setSelectionRange(0, event.target.value.length);
+              }
+            }, 0);
           });
         }
 
@@ -731,10 +738,6 @@
       const input = event.target;
       const index = Number(input.dataset.index);
       const key = input.dataset.key;
-
-      if (input.classList.contains("numeric") && input.value === "") {
-        input.value = input.dataset.previousValue ?? "";
-      }
 
       dataList[index][key] = input.value;
 
