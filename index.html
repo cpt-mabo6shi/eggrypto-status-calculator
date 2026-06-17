@@ -411,7 +411,7 @@
   <script>
     const tableRows = document.getElementById("tableRows");
     const cards = document.getElementById("cards");
-    const STORAGE_KEY = "eggryptoStatusCalculatorResponsiveV9";
+    const STORAGE_KEY = "eggryptoStatusCalculatorResponsiveV10";
 
     let dataList = [];
 
@@ -432,6 +432,21 @@
         detail: "",
         memo: ""
       };
+    }
+
+    function getInitialItemCount() {
+      return window.matchMedia("(min-width: 760px)").matches ? 5 : 1;
+    }
+
+    function createInitialDataList() {
+      const count = getInitialItemCount();
+      const list = [];
+
+      for (let i = 0; i < count; i++) {
+        list.push(defaultData());
+      }
+
+      return list;
     }
 
     function clearActiveFocus() {
@@ -966,7 +981,7 @@
       }
 
       if (!dataList.length) {
-        dataList = [defaultData()];
+        dataList = createInitialDataList();
       }
 
       render();
