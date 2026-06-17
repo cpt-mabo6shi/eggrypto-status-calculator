@@ -96,7 +96,7 @@
     table {
       border-collapse: collapse;
       width: 100%;
-      min-width: 1480px;
+      min-width: 1060px;
     }
 
     th, td {
@@ -112,7 +112,6 @@
     }
 
     input {
-      width: 78px;
       height: 38px;
       padding: 6px;
       font-size: 16px;
@@ -137,8 +136,11 @@
       -webkit-touch-callout: default;
     }
 
-    .desktop-table input.memo,
-    .desktop-table input.detail {
+    .desktop-table input[type="number"] {
+      width: 68px;
+    }
+
+    .desktop-table input.memo {
       width: 180px;
     }
 
@@ -149,7 +151,7 @@
     }
 
     .step-btn {
-      width: 30px;
+      width: 28px;
       height: 34px;
       padding: 0;
       font-size: 18px;
@@ -165,33 +167,28 @@
       transform: translateY(1px);
     }
 
-    .detail-display {
-      margin-top: 4px;
-      font-size: 12px;
-      color: #555;
-      min-height: 16px;
-      word-break: break-all;
-      -webkit-user-select: text;
-      user-select: text;
-      -webkit-touch-callout: default;
-    }
-
     .result {
       font-weight: 900;
       font-size: 18px;
       color: #004f66;
     }
 
-    .action-buttons {
-      display: flex;
-      gap: 6px;
-      justify-content: center;
-      align-items: center;
+    .desktop-reset-btn {
+      padding: 8px 12px;
+      font-size: 13px;
+      font-weight: 700;
     }
 
-    .action-buttons button {
-      padding: 8px 8px;
-      font-size: 12px;
+    .desktop-controls {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+      margin-top: 10px;
+    }
+
+    .desktop-controls button {
+      padding: 10px 18px;
+      font-size: 14px;
       font-weight: 700;
     }
 
@@ -260,11 +257,17 @@
       border-radius: 8px;
     }
 
-    .card .detail-display {
+    .detail-display {
       grid-column: 2 / 3;
       margin-top: -4px;
       margin-bottom: 8px;
       font-size: 13px;
+      color: #555;
+      min-height: 18px;
+      word-break: break-all;
+      -webkit-user-select: text;
+      user-select: text;
+      -webkit-touch-callout: default;
     }
 
     .result-box {
@@ -374,7 +377,6 @@
             <th>レベル</th>
             <th>KIZUNA</th>
             <th>バフ/デバフ</th>
-            <th>内訳</th>
             <th>計算値</th>
             <th>メモ</th>
             <th>操作</th>
@@ -382,6 +384,11 @@
         </thead>
         <tbody id="tableRows"></tbody>
       </table>
+    </div>
+
+    <div class="desktop-controls">
+      <button type="button" onclick="addRow()">行を追加</button>
+      <button type="button" class="delete-btn" onclick="deleteRow()">行を削除</button>
     </div>
   </div>
 
@@ -400,18 +407,18 @@
     バフ/デバフ欄には、ステータスの増減率を％で入力してください。<br>
     +10％なら10、-10％なら-10、補正なしなら0を入力します。<br><br>
 
-    内訳欄には、複数のバフ/デバフを「.」で区切って入力すると、自動計算します。<br>
+    スマホ版の内訳欄には、複数のバフ/デバフを「.」で区切って入力すると、自動計算します。<br>
     例：12.15.15.15.16.-20
   </div>
 
   <div class="credit">
-    cpt.Tools｜EGGRYPTO Status Calculator ver.1.4
+    cpt.ツールズ｜EGGRYPTO Status Calculator ver.1.4
   </div>
 
   <script>
     const tableRows = document.getElementById("tableRows");
     const cards = document.getElementById("cards");
-    const STORAGE_KEY = "eggryptoStatusCalculatorResponsiveV10";
+    const STORAGE_KEY = "eggryptoStatusCalculatorResponsiveV12";
 
     let dataList = [];
 
@@ -586,11 +593,9 @@
       `;
     }
 
-    function actionButtons(index, mobile = false) {
-      const className = mobile ? "card-actions" : "action-buttons";
-
+    function mobileActionButtons(index) {
       return `
-        <div class="${className}">
+        <div class="card-actions">
           <button type="button" onclick="addItem(${index})">カードを追加</button>
           <button type="button" onclick="resetItem(${index})">入力をリセット</button>
           <button type="button" class="delete-btn" onclick="deleteItem(${index})">カードを削除</button>
@@ -617,24 +622,6 @@
           <td>${numberControl(index, "level", item.level, 0, 100, 1)}</td>
           <td>${numberControl(index, "kizuna", item.kizuna, 0, 320, 10)}</td>
           <td>${numberControl(index, "buff", item.buff, -200, 200, 1)}</td>
-          <td>
-            <input
-              type="text"
-              class="detail"
-              data-index="${index}"
-              data-key="detail"
-              value="${escapeHtml(item.detail)}"
-              placeholder="例：12.15.15.-20"
-              inputmode="decimal"
-              autocomplete="off"
-              autocapitalize="off"
-              autocorrect="off"
-              spellcheck="false"
-            >
-            <div class="detail-display" data-detail-display="${index}">
-              ${escapeHtml(detailInfo.expression)}
-            </div>
-          </td>
           <td class="result" data-result="${index}">${result}</td>
           <td>
             <input
@@ -651,7 +638,9 @@
               spellcheck="false"
             >
           </td>
-          <td>${actionButtons(index, false)}</td>
+          <td>
+            <button type="button" class="desktop-reset-btn" onclick="resetItem(${index})">リセット</button>
+          </td>
         `;
         tableRows.appendChild(tr);
 
@@ -678,7 +667,6 @@
               data-key="detail"
               value="${escapeHtml(item.detail)}"
               placeholder="例：12.15.15.-20"
-              inputmode="decimal"
               autocomplete="off"
               autocapitalize="off"
               autocorrect="off"
@@ -711,7 +699,7 @@
             <div class="result" data-result="${index}">${result}</div>
           </div>
 
-          ${actionButtons(index, true)}
+          ${mobileActionButtons(index)}
         `;
         cards.appendChild(card);
       });
@@ -948,6 +936,12 @@
       render();
     }
 
+    function addRow() {
+      dataList.push(defaultData());
+      saveItems();
+      render();
+    }
+
     function resetItem(index) {
       dataList[index] = defaultData();
       saveItems();
@@ -959,6 +953,17 @@
         dataList[0] = defaultData();
       } else {
         dataList.splice(index, 1);
+      }
+
+      saveItems();
+      render();
+    }
+
+    function deleteRow() {
+      if (dataList.length <= 1) {
+        dataList[0] = defaultData();
+      } else {
+        dataList.pop();
       }
 
       saveItems();
