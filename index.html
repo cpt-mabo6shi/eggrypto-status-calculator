@@ -120,9 +120,6 @@
       border: 1px solid #aaa;
       border-radius: 6px;
       background: #fff;
-    }
-
-    input.numeric {
       -webkit-user-select: text;
       user-select: text;
       -webkit-touch-callout: default;
@@ -131,9 +128,6 @@
     input.memo,
     input.detail {
       text-align: left;
-      -webkit-user-select: text;
-      user-select: text;
-      -webkit-touch-callout: default;
     }
 
     .desktop-table input.numeric {
@@ -405,7 +399,7 @@
   <script>
     const tableRows = document.getElementById("tableRows");
     const cards = document.getElementById("cards");
-    const STORAGE_KEY = "eggryptoStatusCalculatorResponsiveV16";
+    const STORAGE_KEY = "eggryptoStatusCalculatorResponsiveV17";
 
     let dataList = [];
 
@@ -548,7 +542,7 @@
             data-min="${min}"
             data-max="${max}"
             data-step="${step}"
-            value="${value}"
+            value="${escapeHtml(value)}"
             autocomplete="off"
             autocapitalize="off"
             autocorrect="off"
@@ -684,18 +678,6 @@
 
     function bindEvents() {
       document.querySelectorAll("input[data-index]").forEach(input => {
-        if (input.classList.contains("numeric")) {
-          input.addEventListener("focus", event => {
-            setTimeout(() => {
-              try {
-                event.target.select();
-              } catch {
-                event.target.setSelectionRange(0, event.target.value.length);
-              }
-            }, 0);
-          });
-        }
-
         input.addEventListener("input", event => {
           const index = Number(event.target.dataset.index);
           const key = event.target.dataset.key;
