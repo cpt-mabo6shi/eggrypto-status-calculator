@@ -405,7 +405,7 @@
   <script>
     const tableRows = document.getElementById("tableRows");
     const cards = document.getElementById("cards");
-    const STORAGE_KEY = "eggryptoStatusCalculatorResponsiveV14";
+    const STORAGE_KEY = "eggryptoStatusCalculatorResponsiveV15";
 
     let dataList = [];
 
@@ -684,39 +684,14 @@
       document.querySelectorAll("input[data-index]").forEach(input => {
         if (input.classList.contains("numeric")) {
           input.addEventListener("focus", event => {
-            event.target.dataset.replaceOnInput = "true";
             event.target.dataset.previousValue = event.target.value;
+            event.target.value = "";
           });
         }
 
         input.addEventListener("input", event => {
           const index = Number(event.target.dataset.index);
           const key = event.target.dataset.key;
-
-          if (
-            event.target.classList.contains("numeric") &&
-            event.target.dataset.replaceOnInput === "true"
-          ) {
-            const previousValue = event.target.dataset.previousValue ?? "";
-            let nextValue = event.target.value;
-
-            if (
-              previousValue !== "" &&
-              nextValue.startsWith(previousValue) &&
-              nextValue.length > previousValue.length
-            ) {
-              nextValue = nextValue.slice(previousValue.length);
-            } else if (
-              event.data !== null &&
-              event.data !== undefined &&
-              event.data !== ""
-            ) {
-              nextValue = event.data;
-            }
-
-            event.target.value = nextValue;
-            event.target.dataset.replaceOnInput = "false";
-          }
 
           dataList[index][key] = event.target.value;
 
@@ -734,35 +709,11 @@
         });
 
         input.addEventListener("change", event => {
-          const index = Number(event.target.dataset.index);
-          const key = event.target.dataset.key;
-
-          dataList[index][key] = event.target.value;
-
-          if (key === "detail") {
-            applyDetail(index, true);
-          }
-
-          normalizeItem(dataList[index]);
-          syncItemInputs(index);
-          saveItems();
-          renderResultsOnly();
+          finishInput(event);
         });
 
         input.addEventListener("blur", event => {
-          const index = Number(event.target.dataset.index);
-          const key = event.target.dataset.key;
-
-          dataList[index][key] = event.target.value;
-
-          if (key === "detail") {
-            applyDetail(index, true);
-          }
-
-          normalizeItem(dataList[index]);
-          syncItemInputs(index);
-          saveItems();
-          renderResultsOnly();
+          finishInput(event);
         });
       });
 
@@ -774,6 +725,27 @@
         button.addEventListener("pointercancel", cancelPress);
         button.addEventListener("contextmenu", event => event.preventDefault());
       });
+    }
+
+    function finishInput(event) {
+      const input = event.target;
+      const index = Number(input.dataset.index);
+      const key = input.dataset.key;
+
+      if (input.classList.contains("numeric") && input.value === "") {
+        input.value = input.dataset.previousValue ?? "";
+      }
+
+      dataList[index][key] = input.value;
+
+      if (key === "detail") {
+        applyDetail(index, true);
+      }
+
+      normalizeItem(dataList[index]);
+      syncItemInputs(index);
+      saveItems();
+      renderResultsOnly();
     }
 
     function applyDetail(index, formatInput) {
