@@ -64,13 +64,6 @@
       font-size: 15px;
     }
 
-    .toolbar {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      margin-bottom: 16px;
-    }
-
     button {
       border: 1px solid #bbb;
       background: #fff;
@@ -78,12 +71,6 @@
       cursor: pointer;
       touch-action: manipulation;
       -webkit-tap-highlight-color: transparent;
-    }
-
-    .toolbar button {
-      padding: 10px 14px;
-      font-size: 15px;
-      font-weight: 700;
     }
 
     button:hover {
@@ -108,7 +95,7 @@
     table {
       border-collapse: collapse;
       width: 100%;
-      min-width: 1120px;
+      min-width: 1040px;
     }
 
     th, td {
@@ -124,7 +111,7 @@
     }
 
     input {
-      width: 78px;
+      width: 68px;
       height: 38px;
       padding: 6px;
       font-size: 16px;
@@ -156,7 +143,7 @@
     }
 
     .step-btn {
-      width: 30px;
+      width: 28px;
       height: 34px;
       padding: 0;
       font-size: 18px;
@@ -178,10 +165,27 @@
       color: #004f66;
     }
 
-    .delete-btn {
+    .row-reset-btn {
       padding: 8px 10px;
-      color: #b00020;
       font-size: 13px;
+      font-weight: 700;
+    }
+
+    .delete-btn {
+      color: #b00020;
+    }
+
+    .desktop-controls {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+      margin-top: 10px;
+    }
+
+    .desktop-controls button {
+      padding: 10px 16px;
+      font-size: 14px;
+      font-weight: 700;
     }
 
     .note {
@@ -278,6 +282,19 @@
       font-weight: 900;
     }
 
+    .card-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .card-actions button {
+      padding: 10px 6px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
     @media (max-width: 759px) {
       body {
         padding: 16px;
@@ -323,11 +340,6 @@
     種族値・個体値・性格補正・レベル・KIZUNA・バフ/デバフを入力すると、計算値を表示します。
   </div>
 
-  <div class="toolbar">
-    <button type="button" onclick="addItem()">追加</button>
-    <button type="button" onclick="resetItems()">リセット</button>
-  </div>
-
   <div class="desktop-table">
     <div class="table-wrap">
       <table>
@@ -342,11 +354,16 @@
             <th>バフ/デバフ</th>
             <th>計算値</th>
             <th>メモ</th>
-            <th>削除</th>
+            <th>操作</th>
           </tr>
         </thead>
         <tbody id="tableRows"></tbody>
       </table>
+    </div>
+
+    <div class="desktop-controls">
+      <button type="button" onclick="addRow()">行の追加</button>
+      <button type="button" class="delete-btn" onclick="deleteRow()">行の削除</button>
     </div>
   </div>
 
@@ -373,7 +390,10 @@
   <script>
     const tableRows = document.getElementById("tableRows");
     const cards = document.getElementById("cards");
-    const STORAGE_KEY = "eggryptoStatusCalculatorResponsiveV7";
+    const STORAGE_KEY = "eggryptoStatusCalculatorResponsiveV8";
+
+    const DESKTOP_MIN_ROWS = 5;
+    const MOBILE_MIN_CARDS = 1;
 
     let dataList = [];
 
@@ -393,6 +413,25 @@
         buff: 0,
         memo: ""
       };
+    }
+
+    function isDesktopView() {
+      return window.matchMedia("(min-width: 760px)").matches;
+    }
+
+    function getInitialItemCount() {
+      return isDesktopView() ? DESKTOP_MIN_ROWS : MOBILE_MIN_CARDS;
+    }
+
+    function createInitialDataList() {
+      const count = getInitialItemCount();
+      const list = [];
+
+      for (let i = 0; i < count; i++) {
+        list.push(defaultData());
+      }
+
+      return list;
     }
 
     function clearActiveFocus() {
@@ -502,6 +541,16 @@
       `;
     }
 
+    function cardActionButtons(index) {
+      return `
+        <div class="card-actions">
+          <button type="button" onclick="addCard(${index})">カード追加</button>
+          <button type="button" onclick="resetItem(${index})">入力をリセット</button>
+          <button type="button" class="delete-btn" onclick="deleteCard(${index})">カードを削除</button>
+        </div>
+      `;
+    }
+
     function render() {
       dataList.forEach(normalizeItem);
 
@@ -536,7 +585,7 @@
               spellcheck="false"
             >
           </td>
-          <td><button type="button" class="delete-btn" onclick="deleteItem(${index})">削除</button></td>
+          <td><button type="button" class="row-reset-btn" onclick="resetItem(${index})">リセット</button></td>
         `;
         tableRows.appendChild(tr);
 
@@ -545,7 +594,6 @@
         card.innerHTML = `
           <div class="card-header">
             <div class="card-title">No.${index + 1}</div>
-            <button type="button" class="delete-btn" onclick="deleteItem(${index})">削除</button>
           </div>
 
           ${field("種族値", index, "base", item.base, 0, 300, 1)}
@@ -576,6 +624,8 @@
             <div class="result-label">計算値</div>
             <div class="result">${result}</div>
           </div>
+
+          ${cardActionButtons(index)}
         `;
         cards.appendChild(card);
       });
@@ -742,25 +792,39 @@
       renderResultsOnly();
     }
 
-    function addItem() {
+    function addRow() {
       dataList.push(defaultData());
       saveItems();
       render();
     }
 
-    function deleteItem(index) {
-      dataList.splice(index, 1);
+    function deleteRow() {
+      if (dataList.length > DESKTOP_MIN_ROWS) {
+        dataList.pop();
+        saveItems();
+        render();
+      }
+    }
+
+    function addCard(index) {
+      dataList.splice(index + 1, 0, defaultData());
       saveItems();
       render();
     }
 
-    function resetItems() {
-      dataList = [];
-
-      for (let i = 0; i < 6; i++) {
-        dataList.push(defaultData());
+    function deleteCard(index) {
+      if (dataList.length > MOBILE_MIN_CARDS) {
+        dataList.splice(index, 1);
+      } else {
+        dataList[0] = defaultData();
       }
 
+      saveItems();
+      render();
+    }
+
+    function resetItem(index) {
+      dataList[index] = defaultData();
       saveItems();
       render();
     }
@@ -775,19 +839,13 @@
       if (saved) {
         try {
           dataList = JSON.parse(saved);
-
-          while (dataList.length < 6) {
-            dataList.push(defaultData());
-          }
         } catch {
           dataList = [];
         }
       }
 
       if (!dataList.length) {
-        for (let i = 0; i < 6; i++) {
-          dataList.push(defaultData());
-        }
+        dataList = createInitialDataList();
       }
 
       render();
