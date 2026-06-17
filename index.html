@@ -405,7 +405,7 @@
   <script>
     const tableRows = document.getElementById("tableRows");
     const cards = document.getElementById("cards");
-    const STORAGE_KEY = "eggryptoStatusCalculatorResponsiveV13";
+    const STORAGE_KEY = "eggryptoStatusCalculatorResponsiveV14";
 
     let dataList = [];
 
@@ -549,7 +549,6 @@
             data-max="${max}"
             data-step="${step}"
             value="${value}"
-            inputmode="decimal"
             autocomplete="off"
           >
           <button
@@ -610,7 +609,6 @@
               data-key="memo"
               value="${escapeHtml(item.memo)}"
               lang="ja"
-              inputmode="text"
               autocomplete="off"
               autocapitalize="off"
               autocorrect="off"
@@ -662,7 +660,6 @@
               data-key="memo"
               value="${escapeHtml(item.memo)}"
               lang="ja"
-              inputmode="text"
               autocomplete="off"
               autocapitalize="off"
               autocorrect="off"
